@@ -1,0 +1,160 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Users ───────────────────────────────────────────────
+
+model User {
+  id                  String   @id @default(uuid()) @db.Uuid
+  email               String   @unique @db.VarChar(255)
+  passwordHash        String?  @map("password_hash") @db.VarChar(255)
+  pinHash             String?  @map("pin_hash") @db.VarChar(255)
+  authType            String   @map("auth_type") @db.VarChar(10) // 'password' | 'pin'
+  fullName            String   @map("full_name") @db.VarChar(255)
+  role                String   @db.VarChar(50) // 'owner' | 'staff'
+  isActive            Boolean  @default(true) @map("is_active")
+  mustChangePassword  Boolean  @default(true) @map("must_change_password")
+  notificationPrefs   Json     @default("{\"in_app\": true}") @map("notification_prefs") @db.JsonB
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @default(now()) @updatedAt @map("updated_at")
+  lastLoginAt         DateTime? @map("last_login_at")
+  createdByUserId     String?  @map("created_by_user_id") @db.Uuid
+
+  // Relations
+  createdBy             User?          @relation("UserCreatedBy", fields: [createdByUserId], references: [id])
+  createdUsers          User[]         @relation("UserCreatedBy")
+  createdItems          Item[]         @relation("ItemCreatedBy")
+  loggedTransactions    Transaction[]  @relation("TransactionLoggedBy")
+  editedTransactions    Transaction[]  @relation("TransactionEditedBy")
+  approvedTransactions  Transaction[]  @relation("TransactionApprovedBy")
+  notifications         Notification[]
+
+  @@map("users")
+}
+
+// ─── Categories ──────────────────────────────────────────
+
+model Category {
+  id           String   @id @default(uuid()) @db.Uuid
+  name         String   @unique @db.VarChar(100)
+  displayOrder Int      @default(0) @map("display_order")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at")
+
+  // Relations
+  items Item[]
+
+  @@map("categories")
+}
+
+// ─── Items ───────────────────────────────────────────────
+
+model Item {
+  id                  String   @id @default(uuid()) @db.Uuid
+  categoryId          String   @map("category_id") @db.Uuid
+  itemDescription     String   @map("item_description") @db.VarChar(255)
+  unitOfMeasure       String   @map("unit_of_measure") @db.VarChar(50)
+  allowsDecimal       Boolean  @default(false) @map("allows_decimal")
+  tracksExpiration    Boolean  @default(false) @map("tracks_expiration")
+
+  quantityInStock     Decimal  @default(0) @map("quantity_in_stock") @db.Decimal(10, 2)
+  currentUnitCostPhp  Decimal  @map("current_unit_cost_php") @db.Decimal(10, 2)
+  // stock_value_php is computed at query time (quantity * cost)
+
+  reorderLevel        Decimal  @default(0) @map("reorder_level") @db.Decimal(10, 2)
+  inventoryLogType    String?  @map("inventory_log_type") @db.VarChar(50)
+  orderCode           String?  @unique @map("order_code") @db.VarChar(100)
+  primaryBusiness     String?  @map("primary_business") @db.VarChar(50)
+
+  primarySupplier        String? @map("primary_supplier")
+  alternativeSuppliers   String? @map("alternative_suppliers")
+  notes                  String?
+
+  isActive            Boolean  @default(true) @map("is_active")
+
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @default(now()) @updatedAt @map("updated_at")
+  createdByUserId     String?  @map("created_by_user_id") @db.Uuid
+
+  // Relations
+  category      Category       @relation(fields: [categoryId], references: [id])
+  createdBy     User?          @relation("ItemCreatedBy", fields: [createdByUserId], references: [id])
+  transactions  Transaction[]
+  notifications Notification[]
+
+  @@unique([categoryId, itemDescription], name: "unique_item_per_category")
+  @@map("items")
+}
+
+// ─── Transactions ────────────────────────────────────────
+
+model Transaction {
+  id                      String   @id @default(uuid()) @db.Uuid
+  itemId                  String   @map("item_id") @db.Uuid
+  businessEntity          String   @map("business_entity") @db.VarChar(50)
+  transactionType         String   @map("transaction_type") @db.VarChar(50)
+
+  quantityChange          Decimal  @map("quantity_change") @db.Decimal(10, 2)
+  stockAfterTransaction   Decimal  @map("stock_after_transaction") @db.Decimal(10, 2)
+  unitCostAtTransaction   Decimal  @map("unit_cost_at_transaction") @db.Decimal(10, 2)
+
+  timestamp               DateTime @default(now())
+  loggedByUserId          String   @map("logged_by_user_id") @db.Uuid
+  notes                   String?
+
+  // Expiration tracking
+  expirationDate          DateTime? @map("expiration_date") @db.Date
+
+  // Edit tracking (5-minute window)
+  editedAt                DateTime? @map("edited_at")
+  editedByUserId          String?   @map("edited_by_user_id") @db.Uuid
+  originalBusinessEntity  String?   @map("original_business_entity") @db.VarChar(50)
+
+  // Adjustment fields
+  adjustmentReason        String?   @map("adjustment_reason") @db.VarChar(100)
+  adjustmentNotes         String?   @map("adjustment_notes")
+  approvedByUserId        String?   @map("approved_by_user_id") @db.Uuid
+  approvalTimestamp       DateTime? @map("approval_timestamp")
+  rejectionReason         String?   @map("rejection_reason")
+
+  // Relations
+  item        Item  @relation(fields: [itemId], references: [id])
+  loggedBy    User  @relation("TransactionLoggedBy", fields: [loggedByUserId], references: [id])
+  editedBy    User? @relation("TransactionEditedBy", fields: [editedByUserId], references: [id])
+  approvedBy  User? @relation("TransactionApprovedBy", fields: [approvedByUserId], references: [id])
+
+  @@map("transactions")
+}
+
+// ─── Notifications ───────────────────────────────────────
+
+model Notification {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  type      String   @db.VarChar(50) // 'low_stock' | 'expiring_soon' | 'expired' | 'adjustment_pending' | 'adjustment_approved' | 'adjustment_rejected'
+  title     String   @db.VarChar(255)
+  message   String
+  itemId    String?  @map("item_id") @db.Uuid
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User  @relation(fields: [userId], references: [id])
+  item Item? @relation(fields: [itemId], references: [id])
+
+  @@map("notifications")
+}
+
+// ─── System Settings ─────────────────────────────────────
+
+model SystemSetting {
+  key         String @id @db.VarChar(100)
+  value       String
+  description String?
+
+  @@map("system_settings")
+}
