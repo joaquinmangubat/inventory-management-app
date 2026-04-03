@@ -1,4 +1,4 @@
-export type ItemPrimaryBusiness = "arcys" | "bale" | "shared";
+export type ItemPrimaryBusiness = "brand_a" | "brand_b" | "shared";
 
 export interface Category {
   id: string;

@@ -41,6 +41,7 @@ export async function POST(request: Request) {
         pinHash: true,
         isActive: true,
         mustChangePassword: true,
+        sessionVersion: true,
       },
     });
 
@@ -82,6 +83,7 @@ export async function POST(request: Request) {
       fullName: user.fullName,
       mustChangePassword: user.mustChangePassword,
       authType: user.authType as AuthType,
+      sessionVersion: user.sessionVersion,
     });
 
     await setAuthCookie(token);

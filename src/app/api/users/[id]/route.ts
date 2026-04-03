@@ -103,6 +103,8 @@ export async function PATCH(
         ...(fullName !== undefined && { fullName }),
         ...(email !== undefined && { email }),
         ...(isActive !== undefined && { isActive }),
+        // Invalidate all active sessions immediately when deactivating a user
+        ...(isActive === false && { sessionVersion: { increment: 1 } }),
       },
       select: userSelect,
     });

@@ -16,7 +16,7 @@ export async function GET() {
       orderBy: { quantityInStock: "asc" },
     });
 
-    const itemsWithSeverity = allItems.map((item) => {
+    const itemsWithSeverity = allItems.map((item: (typeof allItems)[0]) => {
       const qty = Number(item.quantityInStock);
       const reorder = Number(item.reorderLevel);
       const severity: "critical" | "low" | "healthy" =
@@ -69,7 +69,17 @@ export async function GET() {
       },
     });
 
-    const expiringItems = expiringRaw.flatMap((item) => {
+    type ExpiringItem = {
+      id: string;
+      itemDescription: string;
+      categoryName: string;
+      quantityInStock: number;
+      unitOfMeasure: string;
+      expirationDate: string;
+      daysRemaining: number;
+      status: "expired" | "expiring_soon";
+    };
+    const expiringItems: ExpiringItem[] = expiringRaw.flatMap((item: (typeof expiringRaw)[0]) => {
       const expDate = item.transactions[0]?.expirationDate;
       if (!expDate) return [];
       const daysRemaining = Math.floor(

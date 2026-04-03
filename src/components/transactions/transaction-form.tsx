@@ -182,7 +182,7 @@ export function TransactionForm({ onSubmitPreview }: TransactionFormProps) {
                 step={selectedItem?.allowsDecimal ? 0.01 : 1}
                 value={field.value ?? ""}
                 onChange={(e) => field.onChange(e.target.value === "" ? undefined : e.target.valueAsNumber)}
-                className="h-10 w-28 rounded-md border border-input bg-background px-3 py-2 text-center text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="h-10 w-28 rounded-md border border-input bg-card px-3 py-2 text-center text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 placeholder="0"
                 disabled={!selectedItem}
               />
@@ -233,7 +233,7 @@ export function TransactionForm({ onSubmitPreview }: TransactionFormProps) {
                       ? brand === "Brand A"
                         ? "border-red-600 bg-red-50"
                         : "border-green-600 bg-green-50"
-                      : "border-input hover:border-muted-foreground"
+                      : "border-input bg-card hover:border-muted-foreground"
                   )}
                 >
                   <RadioGroupItem value={brand} id={brand} />

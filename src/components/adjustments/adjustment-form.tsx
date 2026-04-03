@@ -219,7 +219,7 @@ export function AdjustmentForm({
               "flex-1 rounded-lg border-2 py-2 text-sm font-medium transition-colors",
               direction === "remove"
                 ? "border-red-600 bg-red-50 text-red-700"
-                : "border-input text-muted-foreground hover:border-muted-foreground"
+                : "border-input bg-card text-muted-foreground hover:border-muted-foreground"
             )}
           >
             Remove Stock
@@ -231,7 +231,7 @@ export function AdjustmentForm({
               "flex-1 rounded-lg border-2 py-2 text-sm font-medium transition-colors",
               direction === "add"
                 ? "border-green-600 bg-green-50 text-green-700"
-                : "border-input text-muted-foreground hover:border-muted-foreground"
+                : "border-input bg-card text-muted-foreground hover:border-muted-foreground"
             )}
           >
             Add Stock
@@ -259,7 +259,7 @@ export function AdjustmentForm({
               setAbsQuantity(v && isNaN(v) ? undefined : v);
               setQuantityError(null);
             }}
-            className="h-10 w-28 rounded-md border border-input bg-background px-3 py-2 text-center text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="h-10 w-28 rounded-md border border-input bg-card px-3 py-2 text-center text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             placeholder="0"
             disabled={!selectedItem}
           />
@@ -319,7 +319,7 @@ export function AdjustmentForm({
                       ? brand === "Brand A"
                         ? "border-red-600 bg-red-50"
                         : "border-green-600 bg-green-50"
-                      : "border-input hover:border-muted-foreground"
+                      : "border-input bg-card hover:border-muted-foreground"
                   )}
                 >
                   <RadioGroupItem value={brand} id={brand} />

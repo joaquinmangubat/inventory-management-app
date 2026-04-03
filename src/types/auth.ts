@@ -8,4 +8,5 @@ export interface SessionUser {
   fullName: string;
   mustChangePassword: boolean;
   authType: AuthType;
+  sessionVersion: number;
 }

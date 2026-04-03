@@ -277,7 +277,7 @@ INSERT INTO system_settings (key, value, description) VALUES
 ├────────────────────────────────────┤
 │                                    │
 │ ┌────────────────────────────────┐ │
-│ │    🔵 BRAND A          │ │  ← Full-width color banner
+│ │    🔵 ARCY'S KITCHEN          │ │  ← Full-width color banner
 │ └────────────────────────────────┘ │
 │                                    │
 │ Item: Alaska All Purpose Cream     │

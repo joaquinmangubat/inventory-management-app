@@ -74,7 +74,7 @@ export async function GET(request: Request) {
     });
 
     const existing = new Set(
-      recentNotifications.map((n) => `${n.userId}:${n.itemId}:${n.type}`)
+      recentNotifications.map((n: { userId: string; itemId: string | null; type: string }) => `${n.userId}:${n.itemId}:${n.type}`)
     );
 
     // Build list of notifications to create, skipping duplicates

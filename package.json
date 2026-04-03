@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "postinstall": "prisma generate",
     "dev": "next dev",
     "dev:test": "node --env-file=.env.test ./node_modules/.bin/next dev -p 3001",
     "build": "next build",

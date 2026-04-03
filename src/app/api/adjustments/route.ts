@@ -81,7 +81,7 @@ export async function POST(request: Request) {
     if (owners.length > 0) {
       const sign = quantityChange > 0 ? "+" : "";
       await db.notification.createMany({
-        data: owners.map((owner) => ({
+        data: owners.map((owner: { id: string }) => ({
           userId: owner.id,
           type: "adjustment_pending",
           title: "Adjustment Pending Review",

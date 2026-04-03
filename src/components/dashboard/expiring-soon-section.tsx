@@ -28,7 +28,7 @@ export function ExpiringSoonSection({ items }: ExpiringSoonSectionProps) {
 
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
-      <div className="rounded-lg border">
+      <div className="rounded-lg border bg-card">
         {/* Header */}
         <CollapsibleTrigger asChild>
           <button className="flex w-full items-center justify-between p-4 text-left hover:bg-muted/50">

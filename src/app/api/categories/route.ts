@@ -5,6 +5,11 @@ import { createCategorySchema } from "@/lib/validations/categories";
 
 export async function GET(request: Request) {
   try {
+    const session = await getSessionFromCookie();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const includeCount = searchParams.get("includeCount") === "true";
 

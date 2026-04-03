@@ -67,7 +67,7 @@ Tech stack: Next.js 14 (App Router), Tailwind CSS + shadcn/ui, TanStack Query, R
 | ID | Screen | Route | Description |
 |----|--------|-------|-------------|
 | I1 | Item List | `/items` | DataTable: name, category, unit, stock, cost (PHP), reorder level, status, actions (edit, update price, deactivate/reactivate). Search + category filter + show-inactive toggle. "Add New Item" button. |
-| I2 | Create/Edit Item | `/items/new`, `/items/[id]/edit` | Fields: description, category, unit of measure, `allows_decimal` switch, **`tracks_expiration` switch** (helper text: "Requires expiration date when adding stock. Shows expiry alerts on dashboard."), unit cost (PHP), reorder level, order code, primary business (optional: Brand A/Bale/Shared), primary supplier, alt suppliers, notes. `is_active` switch on edit only. |
+| I2 | Create/Edit Item | `/items/new`, `/items/[id]/edit` | Fields: description, category, unit of measure, `allows_decimal` switch, **`tracks_expiration` switch** (helper text: "Requires expiration date when adding stock. Shows expiry alerts on dashboard."), unit cost (PHP), reorder level, order code, primary business (optional: Brand A/Brand B/Shared), primary supplier, alt suppliers, notes. `is_active` switch on edit only. |
 | I3 | Update Price Modal | Overlay on I1 | Current price display, new price input, info alert: "Existing transactions keep their recorded prices." Uses separate `PUT /api/items/:id/price` endpoint. |
 
 ### Reports (4 screens)
@@ -77,7 +77,7 @@ Tech stack: Next.js 14 (App Router), Tailwind CSS + shadcn/ui, TanStack Query, R
 | R1 | Reports Landing | `/reports` | All (filtered) | Tab selector shows only accessible reports. Staff sees Low Stock only. Owners see all tabs. Date range presets (This Week, This Month, Last 30 Days, Custom). |
 | R2 | Consumption Report | `/reports/consumption` | **Owner only** | Filters: date range, business, category. Charts (Recharts): bar chart by business, pie by category, line over time. Detail data table below. CSV export button. |
 | R3 | Low Stock Report | `/reports/low-stock` | All users | **Two tabs: "Low Stock" and "Expiring Items".** Low Stock tab: Summary cards (Critical, Low, Healthy counts), table sorted by severity. **Expiring Items tab**: Summary (X expired, Y expiring soon), table: item, category, earliest expiry date, days remaining/status badge (red=expired, amber=expiring soon), current stock. CSV export for both tabs. |
-| R4 | Cost Allocation Report | `/reports/cost-allocation` | **Owner only** | Summary cards: Brand A total (red), Bale total (green), combined. Bar chart by category. Detail table: category, Brand A cost, Bale cost, total. CSV export. |
+| R4 | Cost Allocation Report | `/reports/cost-allocation` | **Owner only** | Summary cards: Brand A total (red), Brand B total (green), combined. Bar chart by category. Detail table: category, Brand A cost, Brand B cost, total. CSV export. |
 
 **Staff report access**: Staff navigating to `/reports` will land directly on the Low Stock report (no tab selector needed since only one report is available). Owner-only report routes return 403 for staff.
 

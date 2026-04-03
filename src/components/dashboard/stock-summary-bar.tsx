@@ -13,33 +13,26 @@ interface StatCardProps {
   icon: React.ReactNode;
   label: string;
   value: string | number;
-  accent?: "amber" | "default";
+  accent?: "blue" | "orange" | "yellow" | "green" | "default";
 }
 
-function StatCard({ icon, label, value, accent }: StatCardProps) {
+const accentStyles: Record<NonNullable<StatCardProps["accent"]>, { icon: string; value: string }> = {
+  blue:    { icon: "rounded-full bg-blue-100 p-2 text-blue-600 shrink-0",   value: "text-base font-bold break-words" },
+  orange:  { icon: "rounded-full bg-orange-100 p-2 text-orange-500 shrink-0", value: "text-base font-bold text-orange-500 break-words" },
+  yellow:  { icon: "rounded-full bg-yellow-100 p-2 text-yellow-600 shrink-0", value: "text-base font-bold text-yellow-600 break-words" },
+  green:   { icon: "rounded-full bg-green-100 p-2 text-green-700 shrink-0",  value: "text-base font-bold break-words" },
+  default: { icon: "rounded-full bg-muted p-2 text-muted-foreground shrink-0", value: "text-base font-bold break-words" },
+};
+
+function StatCard({ icon, label, value, accent = "default" }: StatCardProps) {
+  const styles = accentStyles[accent];
   return (
     <Card>
       <CardContent className="flex items-center gap-3 p-4">
-        <div
-          className={
-            accent === "amber"
-              ? "rounded-full bg-yellow-100 p-2 text-yellow-700 shrink-0"
-              : "rounded-full bg-muted p-2 text-muted-foreground shrink-0"
-          }
-        >
-          {icon}
-        </div>
+        <div className={styles.icon}>{icon}</div>
         <div className="min-w-0">
           <p className="text-xs text-muted-foreground">{label}</p>
-          <p
-            className={
-              accent === "amber"
-                ? "text-base font-bold text-yellow-700 break-words"
-                : "text-base font-bold break-words"
-            }
-          >
-            {value}
-          </p>
+          <p className={styles.value}>{value}</p>
         </div>
       </CardContent>
     </Card>
@@ -73,23 +66,25 @@ export function StockSummaryBar({
         icon={<Package className="h-4 w-4" />}
         label="Total Items"
         value={totalItems}
+        accent="blue"
       />
       <StatCard
         icon={<AlertTriangle className="h-4 w-4" />}
         label="Low Stock"
         value={lowStockCount}
-        accent={lowStockCount > 0 ? "amber" : "default"}
+        accent={lowStockCount > 0 ? "orange" : "default"}
       />
       <StatCard
         icon={<Calendar className="h-4 w-4" />}
         label="Expiring Soon"
         value={expiringCount}
-        accent={expiringCount > 0 ? "amber" : "default"}
+        accent={expiringCount > 0 ? "yellow" : "default"}
       />
       <StatCard
         icon={<DollarSign className="h-4 w-4" />}
         label="Total Value"
         value={formattedValue}
+        accent="green"
       />
     </div>
   );

@@ -167,7 +167,7 @@ export async function POST(request: Request) {
         select: { id: true },
       });
       await db.notification.createMany({
-        data: owners.map((owner) => ({
+        data: owners.map((owner: { id: string }) => ({
           userId: owner.id,
           type: "low_stock",
           title: "Negative Stock Alert",

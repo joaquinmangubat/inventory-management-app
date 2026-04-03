@@ -58,7 +58,7 @@ export function ConsumptionChart({ report }: ConsumptionChartProps) {
   const lineData = report.byDate.map((d) => ({
     date: d.date.slice(5), // MM-DD
     "Brand A": parseFloat(d.arcysCost.toFixed(2)),
-    Bale: parseFloat(d.baleCost.toFixed(2)),
+    "Brand B": parseFloat(d.baleCost.toFixed(2)),
   }));
 
   return (

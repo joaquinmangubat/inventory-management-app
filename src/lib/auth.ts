@@ -1,6 +1,7 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import type { SessionUser } from "@/types/auth";
+import { validateSessionFromDb } from "@/lib/session-validation";
 
 const COOKIE_NAME = "auth-token";
 const MAX_AGE = 5400; // 90 minutes in seconds
@@ -48,5 +49,19 @@ export async function getSessionFromCookie(): Promise<SessionUser | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
   if (!token) return null;
-  return verifyToken(token);
+
+  const decoded = await verifyToken(token);
+  if (!decoded) return null;
+
+  // DB validation: confirms user is still active and sessionVersion matches
+  const result = await validateSessionFromDb(decoded);
+  if (!result.valid) {
+    await clearAuthCookie();
+    return null;
+  }
+
+  // Sliding window: re-issue token with fresh expiry
+  const newToken = await signToken(result.session);
+  await setAuthCookie(newToken);
+  return result.session;
 }

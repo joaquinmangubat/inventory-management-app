@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { SignJWT, jwtVerify } from "jose";
+import { jwtVerify } from "jose";
 import type { SessionUser } from "@/types/auth";
 
 const COOKIE_NAME = "auth-token";
-const MAX_AGE = 5400;
 
 function getSecret() {
   const secret = process.env.JWT_SECRET;
@@ -21,23 +20,6 @@ async function verifyToken(token: string): Promise<SessionUser | null> {
   }
 }
 
-async function refreshToken(session: SessionUser): Promise<string> {
-  return new SignJWT({ ...session })
-    .setProtectedHeader({ alg: "HS256" })
-    .setIssuedAt()
-    .setExpirationTime(`${MAX_AGE}s`)
-    .sign(getSecret());
-}
-
-function setTokenCookie(response: NextResponse, token: string) {
-  response.cookies.set(COOKIE_NAME, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: MAX_AGE,
-  });
-}
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -88,11 +70,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(changeRoute, request.url));
   }
 
-  // Sliding window: refresh JWT on every authenticated request
-  const newToken = await refreshToken(session);
-  const response = NextResponse.next();
-  setTokenCookie(response, newToken);
-  return response;
+  // Sliding window is handled inside getSessionFromCookie() on each API call.
+  return NextResponse.next();
 }
 
 export const config = {

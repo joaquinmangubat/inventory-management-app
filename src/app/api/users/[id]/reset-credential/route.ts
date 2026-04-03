@@ -61,6 +61,8 @@ export async function POST(
           ? { pinHash: credentialHash }
           : { passwordHash: credentialHash }),
         mustChangePassword: true,
+        // Force the user to re-login — their existing sessions are now invalid
+        sessionVersion: { increment: 1 },
       },
     });
 

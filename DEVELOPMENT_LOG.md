@@ -687,7 +687,7 @@ const result = items.flatMap((item) => {
 |------|---------|
 | `src/app/api/items/expiring/route.ts` | GET — items with expiring/expired transaction dates |
 | `src/hooks/use-expiring-items.ts` | `useExpiringItems()` — 2-min stale time |
-| `src/components/shared/business-badge.tsx` | Shared Brand A (red) / Bale (green) brand badge |
+| `src/components/shared/business-badge.tsx` | Shared Brand A (red) / Brand B (green) brand badge |
 | `src/components/dashboard/stock-summary-bar.tsx` | 4 stat cards: Total Items, Low Stock, Expiring, Total Value |
 | `src/components/dashboard/item-card.tsx` | Card: brand badge, stock status, value, reorder progress bar, expiry warning |
 | `src/components/dashboard/expiring-soon-section.tsx` | Collapsible: expired/expiring items with "Submit Adjustment" link for expired |
@@ -1093,11 +1093,11 @@ Earlier in the session the `git filter-repo` history rewrite (to purge a committ
 ### Subtasks Completed
 
 1. Create `GET /api/reports/consumption` route — owner only, filters: dateFrom, dateTo, businessEntity, categoryId; aggregates `consume` transactions by business, category, date, and item; returns byBusiness, byCategory, byDate, rows
-2. Create `GET /api/reports/cost-allocation` route — owner only, filters: dateFrom, dateTo; aggregates `consume` transactions into Brand A/Bale totals per category; returns summary + byCategory breakdown
+2. Create `GET /api/reports/cost-allocation` route — owner only, filters: dateFrom, dateTo; aggregates `consume` transactions into Brand A/Brand B totals per category; returns summary + byCategory breakdown
 3. Create `GET /api/reports/low-stock` route — all users; classifies all active items as critical/low/healthy by stock vs. reorder level; reuses expiring-items logic from `/api/items/expiring`; returns lowStock + expiringItems payloads
 4. Build `src/hooks/use-reports.ts` with `useConsumptionReport`, `useCostAllocationReport`, `useLowStockReport` — 2-minute staleTime, filter-aware query keys
 5. Build shared report components: `ReportsNav` (tab bar linking between reports, visibility gated by role), `DateRangeSelector` (preset buttons + custom date inputs), `ExportButton` (client-side CSV generation + download trigger)
-6. Build chart components: `ConsumptionChart` (bar by brand, pie by category, line trend over time using Recharts), `CostAllocationChart` (grouped bar chart by category, Brand A red / Bale green)
+6. Build chart components: `ConsumptionChart` (bar by brand, pie by category, line trend over time using Recharts), `CostAllocationChart` (grouped bar chart by category, Brand A red / Brand B green)
 7. Build data table components: `LowStockTable` (severity-sorted, red/yellow/green badges), `ExpiringItemsTable` (expired/expiring-soon badges with days-remaining column)
 8. Build `/reports/page.tsx` — smart redirect: owners → `/reports/consumption`, staff → `/reports/low-stock`
 9. Build `/reports/consumption/page.tsx` — owner-only, brand + category filters, summary cards, charts, detail table, CSV export
@@ -1907,7 +1907,7 @@ The layout had two layers: `CategoryRow` rendered the pencil button as the last 
 
 ### Fix 3: Item Management — shared items showing no brand tags
 
-**Problem:** Items assigned to both brands (i.e., shared items) showed no brand badges in the item table. Brand-specific items correctly showed either the Brand A or Bale badge, but shared items appeared with no tag at all.
+**Problem:** Items assigned to both brands (i.e., shared items) showed no brand badges in the item table. Brand-specific items correctly showed either the Brand A or Brand B badge, but shared items appeared with no tag at all.
 
 **Root cause — two layers:**
 
@@ -1934,7 +1934,7 @@ if (!business || business === "shared") {
   return (
     <>
       <Badge ...>{"Brand A"}</Badge>
-      <Badge ...>Bale</Badge>
+      <Badge ...>Brand B</Badge>
     </>
   );
 }
@@ -1978,3 +1978,158 @@ The proper distributed solution (Upstash Redis + `@upstash/ratelimit`) would be 
 - `resetRateLimit` called after successful login. This resets the IP's counter so a legitimate user who fat-fingered their password a few times doesn't stay penalized after getting in.
 - Lookup route does NOT reset on success — it's just an email probe step, not a full authentication.
 
+---
+
+## Production Deployment: Vercel + Neon Postgres
+
+**Date:** 2026-03-26
+**Scope:** Deploy the app to Vercel with Neon (via Vercel Postgres) as the production database.
+
+### Stack Decision
+
+Chose **Vercel** (frontend/API) + **Neon** (PostgreSQL, via Vercel's Postgres integration) over the originally planned Railway. Reasons:
+- Both are on free tiers with no upfront cost
+- Neon is provisioned directly from the Vercel dashboard — no separate account or manual `DATABASE_URL` wiring
+- Easy migration path to Railway later if needed (pg_dump + swap env var)
+
+### TypeScript Build Failures on Vercel
+
+The biggest friction during deployment was a series of TypeScript errors that only surfaced on Vercel's clean-build environment, not locally. Root cause: `"incremental": true` in `tsconfig.json` causes TypeScript to cache its build results locally via `tsconfig.tsbuildinfo`. Local runs skip re-checking unchanged files. Vercel starts with no cache and checks everything fresh.
+
+**Errors fixed:**
+- Implicit `any` on `.map()` and `.flatMap()` callbacks in multiple API routes — fixed by adding inline type annotations (`(owner: { id: string })`) or explicit return type arrays (`const result: ExpiringResult[] = ...`)
+- `prisma/seed-test.ts` being picked up by Next.js's type checker — fixed by adding it to `tsconfig.json` exclude array
+- `flatMap` returning a mix of `[]` and an object caused TypeScript to lose the return type, making downstream `.sort()` callbacks untyped — fixed by explicitly typing the result array
+
+**Prevention:** Added `postinstall: "prisma generate"` to `package.json` so Vercel always regenerates Prisma's TypeScript types after `npm install`, before the build runs. Also established the rule: before every push, run `rm -rf .next tsconfig.tsbuildinfo && npm run build` — the same clean-slate check Vercel runs.
+
+### Database Connection Issue
+
+After successful deployment, `/api/auth/lookup` was returning 500. All env vars were present. Root cause: `db.ts` was using `DATABASE_URL` (Neon's pooled connection) with the `PrismaPg` driver adapter. Neon's pooled URL routes through PgBouncer, which doesn't support Prisma's session-mode features.
+
+**Fix:** Updated `db.ts` to prefer `DATABASE_URL_UNPOOLED` when available (Neon injects both):
+
+```ts
+const connectionString = process.env.DATABASE_URL_UNPOOLED ?? process.env.DATABASE_URL!;
+```
+
+**Lesson:** When using Neon with Prisma, always use the unpooled connection string. The pooled URL is for query-mode connections (e.g. direct SQL clients), not for Prisma's driver adapter which needs session-mode support.
+
+### Migrations & Seed
+
+- Ran `npx prisma migrate deploy` locally with `DATABASE_URL` set to the production Neon URL — applied all migrations to the production database
+- Ran `npx prisma db seed` to create the default owner account (`owner@inventory.local` / `changeme123`)
+- Smoke test confirmed: login works, dashboard loads, transactions can be logged
+
+---
+
+## Security Remediation (Codex Audit)
+
+**Date:** 2026-03-28
+**Scope:** 4 of 5 vulnerabilities identified by Codex security audit. Patch Set 3 (Redis rate limiting) deferred.
+
+### Patch Set 1: Session Revocation / Role-Change Bypass (Critical)
+
+**Problem:** Middleware refreshed JWTs by re-signing the raw token payload — no DB check ever happened. Deactivated users and role-changed users kept valid, auto-refreshing sessions until natural expiry (up to 90 min).
+
+**Changes:**
+- Added `sessionVersion Int @default(0)` to `User` model; migration `20260328090149_add_session_version`
+- Added `sessionVersion: number` to `SessionUser` type in `src/types/auth.ts`
+- Created `src/lib/session-validation.ts` — queries DB, validates `isActive` and `sessionVersion`
+- Updated `getSessionFromCookie()` in `src/lib/auth.ts` to call `validateSessionFromDb()` on every request; handles sliding window internally (re-issues token with fresh expiry)
+- Removed `refreshToken()` and `setTokenCookie()` from `src/middleware.ts` — middleware now only does JWT crypto verification for redirect decisions
+- Simplified `src/app/api/auth/session/route.ts` — removed redundant `signToken` + `setAuthCookie` calls (now handled by `getSessionFromCookie`)
+- `src/app/api/auth/login/route.ts` — added `sessionVersion` to DB select and `signToken` payload
+- `src/app/api/users/[id]/route.ts` — increments `sessionVersion` when `isActive` is set to `false`
+- `src/app/api/users/[id]/reset-credential/route.ts` — increments `sessionVersion` on credential reset
+
+**Bug hit:** After adding `sessionVersion` to the Prisma select in the login route, build failed with `'sessionVersion' does not exist in type 'UserSelect'`. Root cause: schema was updated but `prisma generate` hadn't been run. Fixed with `npx prisma generate` before the build.
+
+**Deployment note:** All existing sessions are invalidated on first request post-deploy (tokens without `sessionVersion` field fail the mismatch check). Users must re-login once. Expected and intentional.
+
+---
+
+### Patch Set 2: Account Enumeration in Lookup Endpoint (High)
+
+**Problem:** `POST /api/auth/lookup` returned `{ authType, fullName }` with status 200 for existing accounts, and `{ error }` with status 404 for non-existing ones. Enabled scripted enumeration of all valid email addresses plus user names and auth types.
+
+**Changes:**
+- `src/app/api/auth/lookup/route.ts` — replaced entire implementation with a constant `200 { success: true }`, no DB query, no imports
+- `src/components/auth/login-flow.tsx` — removed `fullName` and `authType` state; step 2 now shows a generic "Enter your password or PIN" field regardless of account type; removed "Welcome back, [Name]" greeting
+
+**Bug hit:** After clearing the `.next` cache for a clean rebuild, encountered a stale cache `ENOENT` error on a previous build artifact. Fixed by running `rm -rf .next && npm run build`.
+
+**Side effect:** `/login` bundle size dropped from 2.83 kB to 2.54 kB — removed state is reflected in smaller client JS.
+
+---
+
+### Patch Set 4: Defense-in-Depth Auth on Sensitive GET Routes (Medium)
+
+**Problem:** `GET /api/items`, `GET /api/categories`, and `GET /api/items/expiring` had no auth check inside the route handler — only middleware. Direct unauthenticated HTTP calls bypassed middleware and returned data.
+
+**Changes:**
+- Added `getSessionFromCookie()` guard at the top of each GET handler; returns `401` if no session
+- Added `import { getSessionFromCookie } from "@/lib/auth"` to `expiring/route.ts` (it didn't have it)
+
+**Side effect:** `/api/items/expiring` changed from `○` (static, prerendered) to `ƒ` (dynamic, server-rendered on demand) in the Next.js build output — correct, since it now requires a live session check.
+
+---
+
+### Patch Set 5: Security Headers (Medium)
+
+**Problem:** `next.config.mjs` was empty — no HTTP security headers on any response.
+
+**Changes:**
+- Updated `next.config.mjs` to add `async headers()` returning 6 headers on all routes (`/(.*)`):
+  - `X-Frame-Options: DENY`
+  - `X-Content-Type-Options: nosniff`
+  - `Referrer-Policy: strict-origin-when-cross-origin`
+  - `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload`
+  - `Permissions-Policy: camera=(), microphone=(), geolocation=()`
+  - `Content-Security-Policy` — `default-src 'self'`, with `'unsafe-inline'` for scripts and styles (required by Next.js App Router hydration and Tailwind/shadcn)
+
+**Note:** `'unsafe-inline'` on `script-src` and `style-src` is a known limitation of Next.js 14 App Router. Can be tightened later with a nonce-based CSP if needed.
+
+---
+
+### Patch Set 3: Redis Rate Limiting (High) — DEFERRED
+
+**Problem:** In-memory rate limiter doesn't survive serverless cold starts or multi-instance deployments. `x-forwarded-for` header used for IP extraction is spoofable by clients.
+
+**Deferred because:** Requires provisioning Upstash Redis (external service). Acceptable risk for now given small known user base.
+
+**When ready:** Install `@upstash/ratelimit @upstash/redis`, rewrite `src/lib/rate-limit.ts` with sliding window keyed on `email:ip`, use `x-vercel-forwarded-for` (Vercel-set, not spoofable) for IP extraction, add `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` to Vercel env vars.
+
+
+---
+
+## UI Polish — White Surfaces & Dev Environment Fix
+
+**Date:** 2026-03-29
+**Scope:** Visual consistency pass across all pages; local dev environment setup.
+
+### What We Built
+
+- **Login page warm background** — changed auth layout from flat `bg-background` (`#F2F2F7`) to warm off-white `#FAF9F7`. More welcoming for a restaurant-facing app, less clinical.
+
+- **Global input/form surfaces** — changed `bg-background` → `bg-card` (white) in the shadcn/ui base components: `input.tsx`, `select.tsx` (SelectTrigger), `textarea.tsx`, `button.tsx` (outline variant). Because the whole app builds on these primitives, one change fixes every page automatically.
+
+- **Global overlay surfaces** — same fix applied to `dialog.tsx`, `alert-dialog.tsx`, `sheet.tsx`. Modals and panels are now white instead of blending into the page gray.
+
+- **Dashboard Expiring Soon section** — added `bg-card` to the collapsible wrapper; previously had no background so it blended with the page.
+
+- **Transaction & Adjustment forms** — three custom surfaces needed manual fixes: quantity stepper `<input>` elements (raw HTML, not using the base Input component), brand selector radio cards (unselected state had no background class), and the Remove Stock / Add Stock correction toggle buttons (unselected state had no background class).
+
+- **User Management table** — added `bg-card` to the `rounded-md border` table wrapper div.
+
+- **CSP dev fix** — the Content Security Policy in `next.config.mjs` blocked `unsafe-eval`, which Next.js HMR (Hot Module Replacement) requires in development mode. Added conditional: `unsafe-eval` is included in `script-src` only when `NODE_ENV === 'development'`. Production CSP unchanged.
+
+### Bugs Hit and Fixed
+
+**Bug: Login button did nothing in local dev**
+- **Symptom:** Clicking Continue/Sign In on the login page had no visible effect. No network request, no error shown.
+- **Root cause 1:** Missing `.env.local` — without `DATABASE_URL` and `JWT_SECRET`, the app silently fails any DB call. Created `.env.local` with Neon connection string and JWT secret from Vercel dashboard.
+- **Root cause 2:** Even after `.env.local` was added, the browser console showed `Uncaught EvalError: ... 'unsafe-eval' is not an allowed source`. The CSP was blocking Next.js's HMR runtime, which uses `eval` to inject hot-reloaded modules. This prevented React from mounting, so the button had no click handler attached at all.
+- **Fix:** Added `isDev = process.env.NODE_ENV === 'development'` check to `next.config.mjs`; appended `'unsafe-eval'` to `script-src` only in dev mode.
+
+**Key distinction learned:** Production builds don't need `unsafe-eval` because Next.js pre-compiles everything statically. Dev mode uses webpack HMR which requires `eval` to inject code changes on the fly. The CSP that works in production was actively breaking local development.

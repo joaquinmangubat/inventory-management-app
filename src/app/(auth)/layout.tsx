@@ -4,7 +4,7 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[#FAF9F7] px-4">
       <div className="mb-8 text-center">
         <h1 className="text-2xl font-bold tracking-tight">
           Inventory Management

@@ -29,8 +29,8 @@ export interface ConsumptionByCategory {
 
 export interface ConsumptionByDate {
   date: string;
-  arcysCost: number;
-  baleCost: number;
+  brandACost: number;
+  brandBCost: number;
 }
 
 export interface ConsumptionRow {
@@ -58,8 +58,8 @@ export interface CostAllocationFilters {
 }
 
 export interface CostAllocationSummary {
-  arcysTotal: number;
-  baleTotal: number;
+  brandATotal: number;
+  brandBTotal: number;
   combinedTotal: number;
 }
 

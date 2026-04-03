@@ -10,20 +10,20 @@ export function BusinessBadge({ business }: BusinessBadgeProps) {
     return (
       <>
         <Badge className="bg-arcys-50 text-arcys-700 hover:bg-arcys-50">{"Brand A"}</Badge>
-        <Badge className="bg-bale-50 text-bale-700 hover:bg-bale-50">Bale</Badge>
+        <Badge className="bg-green-50 text-green-700 hover:bg-green-50">Brand B</Badge>
       </>
     );
   }
-  const isArcys = business === "arcys";
+  const isBrandA = business === "arcys";
   return (
     <Badge
       className={
-        isArcys
+        isBrandA
           ? "bg-arcys-50 text-arcys-700 hover:bg-arcys-50"
           : "bg-bale-50 text-bale-700 hover:bg-bale-50"
       }
     >
-      {isArcys ? "Brand A" : "Brand B"}
+      {isBrandA ? "Brand A" : "Brand B"}
     </Badge>
   );
 }

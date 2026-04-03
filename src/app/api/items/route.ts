@@ -5,6 +5,11 @@ import { createItemSchema } from "@/lib/validations/items";
 
 export async function GET(request: Request) {
   try {
+    const session = await getSessionFromCookie();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search") ?? "";
     const categoryId = searchParams.get("categoryId") ?? "";
