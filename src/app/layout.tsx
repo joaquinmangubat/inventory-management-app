@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/nextjs";
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { QueryProvider } from "@/providers/query-provider";
@@ -13,9 +12,6 @@ export function generateMetadata(): Metadata {
       capable: true,
       title: "Inventory",
       statusBarStyle: "default",
-    },
-    other: {
-      ...Sentry.getTraceData(),
     },
   };
 }
