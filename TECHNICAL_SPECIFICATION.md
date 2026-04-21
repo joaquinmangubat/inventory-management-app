@@ -5,7 +5,7 @@
 
 ## Executive Summary
 
-A web application replacing Google Sheets for managing shared inventory across Brand A and Brand B. Tracks ~95 inventory items with complete transaction history, business attribution, and automated alerts.
+A web application replacing Google Sheets for managing shared inventory across Arcy's Kitchen and Bale Kapampangan. Tracks ~95 inventory items with complete transaction history, business attribution, and automated alerts.
 
 **Key Architecture**: One company, two brands. All staff see all data. Every transaction manually tagged to a brand. Simplified MVP scope (no offline/PWA, no email).
 
@@ -108,7 +108,7 @@ CREATE TABLE items (
   CONSTRAINT positive_cost CHECK (current_unit_cost_php > 0),
   CONSTRAINT valid_primary_business CHECK (
     primary_business IS NULL OR
-    primary_business IN ('Brand A', 'Brand B', 'Shared')
+    primary_business IN ('Arcy''s Kitchen', 'Bale Kapampangan', 'Shared')
   )
 );
 ```
@@ -145,7 +145,7 @@ CREATE TABLE transactions (
   rejection_reason TEXT,
 
   CONSTRAINT valid_business_entity CHECK (
-    business_entity IN ('Brand A', 'Brand B')
+    business_entity IN ('Arcy''s Kitchen', 'Bale Kapampangan')
   ),
   CONSTRAINT valid_transaction_type CHECK (
     transaction_type IN ('add', 'consume', 'adjust_pending',
@@ -251,10 +251,10 @@ INSERT INTO system_settings (key, value, description) VALUES
 │                                     │
 │ Business Brand *                    │
 │ ┌─────────────────────────────────┐ │
-│ │ 💡 Last used: Brand A   │ │  ← Smart suggestion (no pre-select)
+│ │ 💡 Last used: Arcy's Kitchen   │ │  ← Smart suggestion (no pre-select)
 │ │                                 │ │
-│ │ ○ Brand A  (blue)       │ │
-│ │ ○ Brand B (orange)    │ │
+│ │ ○ Arcy's Kitchen  (blue)       │ │
+│ │ ○ Bale Kapampangan (orange)    │ │
 │ └─────────────────────────────────┘ │
 │                                     │
 │ Type: ○ Add Stock  ● Consume        │
@@ -334,7 +334,7 @@ After submission, transaction card shows:
 ┌─────────────────────────────────────┐
 │ ✓ Transaction Logged               │
 │                                     │
-│ 🔵 Brand A                  │
+│ 🔵 Arcy's Kitchen                  │
 │ Alaska Cream - Consumed            │
 │ -5 pieces → Stock: 75              │
 │ Expires: Jan 15, 2026              │  ← Only shown if expiration date set

@@ -687,7 +687,7 @@ const result = items.flatMap((item) => {
 |------|---------|
 | `src/app/api/items/expiring/route.ts` | GET — items with expiring/expired transaction dates |
 | `src/hooks/use-expiring-items.ts` | `useExpiringItems()` — 2-min stale time |
-| `src/components/shared/business-badge.tsx` | Shared Brand A (red) / Brand B (green) brand badge |
+| `src/components/shared/business-badge.tsx` | Shared Arcy's (red) / Bale (green) brand badge |
 | `src/components/dashboard/stock-summary-bar.tsx` | 4 stat cards: Total Items, Low Stock, Expiring, Total Value |
 | `src/components/dashboard/item-card.tsx` | Card: brand badge, stock status, value, reorder progress bar, expiry warning |
 | `src/components/dashboard/expiring-soon-section.tsx` | Collapsible: expired/expiring items with "Submit Adjustment" link for expired |
@@ -1093,11 +1093,11 @@ Earlier in the session the `git filter-repo` history rewrite (to purge a committ
 ### Subtasks Completed
 
 1. Create `GET /api/reports/consumption` route — owner only, filters: dateFrom, dateTo, businessEntity, categoryId; aggregates `consume` transactions by business, category, date, and item; returns byBusiness, byCategory, byDate, rows
-2. Create `GET /api/reports/cost-allocation` route — owner only, filters: dateFrom, dateTo; aggregates `consume` transactions into Brand A/Brand B totals per category; returns summary + byCategory breakdown
+2. Create `GET /api/reports/cost-allocation` route — owner only, filters: dateFrom, dateTo; aggregates `consume` transactions into Arcy's/Bale totals per category; returns summary + byCategory breakdown
 3. Create `GET /api/reports/low-stock` route — all users; classifies all active items as critical/low/healthy by stock vs. reorder level; reuses expiring-items logic from `/api/items/expiring`; returns lowStock + expiringItems payloads
 4. Build `src/hooks/use-reports.ts` with `useConsumptionReport`, `useCostAllocationReport`, `useLowStockReport` — 2-minute staleTime, filter-aware query keys
 5. Build shared report components: `ReportsNav` (tab bar linking between reports, visibility gated by role), `DateRangeSelector` (preset buttons + custom date inputs), `ExportButton` (client-side CSV generation + download trigger)
-6. Build chart components: `ConsumptionChart` (bar by brand, pie by category, line trend over time using Recharts), `CostAllocationChart` (grouped bar chart by category, Brand A red / Brand B green)
+6. Build chart components: `ConsumptionChart` (bar by brand, pie by category, line trend over time using Recharts), `CostAllocationChart` (grouped bar chart by category, Arcy's red / Bale green)
 7. Build data table components: `LowStockTable` (severity-sorted, red/yellow/green badges), `ExpiringItemsTable` (expired/expiring-soon badges with days-remaining column)
 8. Build `/reports/page.tsx` — smart redirect: owners → `/reports/consumption`, staff → `/reports/low-stock`
 9. Build `/reports/consumption/page.tsx` — owner-only, brand + category filters, summary cards, charts, detail table, CSV export
@@ -1672,7 +1672,7 @@ Three issues identified during the first manual testing pass:
 
 Five issues identified during the second manual testing pass:
 
-1. **Transaction confirmation modal had brand colors** — The preview popup displayed a full-width colored banner (red for Brand A, green for Brand B) at the top of the dialog. Tester feedback: unnecessary color, the brand name is enough. Removed the colored banner entirely. Brand name is now shown as a plain text row inside the details list alongside Item, Action, and New Stock.
+1. **Transaction confirmation modal had brand colors** — The preview popup displayed a full-width colored banner (red for Arcy's Kitchen, green for Bale Kapampangan) at the top of the dialog. Tester feedback: unnecessary color, the brand name is enough. Removed the colored banner entirely. Brand name is now shown as a plain text row inside the details list alongside Item, Action, and New Stock.
 
 2. **Edit transaction page threw a runtime error** — Clicking "Edit" on a recent transaction produced: `Unhandled Runtime Error — Error: An unsupported type was passed to use(): [object Object]`. Root cause: the edit page was using React's `use()` hook to unwrap `params` as a Promise — the Next.js 15 pattern. But this project runs Next.js 14.2.x where `params` is still a plain synchronous object. Passing a plain object to `use()` throws. Fixed by removing `use()` and destructuring `params` directly.
 
@@ -1907,7 +1907,7 @@ The layout had two layers: `CategoryRow` rendered the pencil button as the last 
 
 ### Fix 3: Item Management — shared items showing no brand tags
 
-**Problem:** Items assigned to both brands (i.e., shared items) showed no brand badges in the item table. Brand-specific items correctly showed either the Brand A or Brand B badge, but shared items appeared with no tag at all.
+**Problem:** Items assigned to both brands (i.e., shared items) showed no brand badges in the item table. Brand-specific items correctly showed either the Arcy's or Bale badge, but shared items appeared with no tag at all.
 
 **Root cause — two layers:**
 
@@ -1933,8 +1933,8 @@ So shared items are stored as `primaryBusiness = null` in the database — never
 if (!business || business === "shared") {
   return (
     <>
-      <Badge ...>{"Brand A"}</Badge>
-      <Badge ...>Brand B</Badge>
+      <Badge ...>{"Arcy's"}</Badge>
+      <Badge ...>Bale</Badge>
     </>
   );
 }
@@ -2092,6 +2092,51 @@ const connectionString = process.env.DATABASE_URL_UNPOOLED ?? process.env.DATABA
 
 ---
 
+---
+
+## Sentry Error Tracking — Production Observability
+
+**Date:** 2026-04-04
+**Scope:** Install and configure Sentry for production error monitoring.
+
+### What We Built
+
+- **Sentry SDK installed** via `npx @sentry/wizard@latest -i nextjs`. The wizard auto-generated `sentry.client.config.ts`, `sentry.server.config.ts`, `sentry.edge.config.ts`, `src/instrumentation.ts`, `src/instrumentation-client.ts`, and updated `next.config.mjs` to wrap with `withSentryConfig`.
+
+- **Tunnel route** (`/monitoring`) — Sentry requests from the browser are proxied through our own domain instead of going directly to `sentry.io`. This prevents ad blockers from silently dropping error reports.
+
+- **Structured logs enabled** — Sentry Logs integration turned on so application logs can be sent alongside errors for context.
+
+- **`captureException` added to critical API routes** — all catch blocks in the following routes now call `Sentry.captureException(err)` before returning 500:
+  - `api/transactions/route.ts`
+  - `api/adjustments/route.ts`
+  - `api/adjustments/[id]/approve/route.ts`
+  - `api/adjustments/[id]/reject/route.ts`
+  - `api/adjustments/pending/route.ts`
+  - `api/auth/login/route.ts`
+  - `api/items/route.ts`
+  - `api/cron/expiration-check/route.ts` (replaced `console.error`)
+
+- **Global React error boundary** (`src/app/error.tsx`) — catches frontend component crashes and reports them to Sentry.
+
+- **`generateMetadata` in `layout.tsx`** — replaced static `metadata` export with `generateMetadata()` function that spreads `Sentry.getTraceData()` into the `other` field. This injects Sentry trace headers into the HTML, enabling distributed tracing between frontend and backend.
+
+- **Vercel integration** — connected Sentry to Vercel via the official integration. Automatically injects `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, and `SENTRY_PROJECT` into Vercel environment variables so source maps are uploaded on every deploy (readable stack traces in production).
+
+- **Email alerts configured** — Sentry alert rule set to email on first occurrence of any new issue type.
+
+### Why This Matters
+
+Before this, all 30+ API route catch blocks silently swallowed errors — they returned a 500 but logged nothing. There was no way to know what broke in production, where, or why, unless a user reported it. Now every unexpected exception is captured with a full stack trace, request context, and timestamp.
+
+### Decisions Made
+
+- **US data region** — chosen over EU since both Vercel and Railway default to US, keeping latency low. No GDPR obligation for this app.
+- **Session Replay skipped** — free tier quota preserved for actual errors. Not needed for an internal tool.
+- **Sentry dashboard as primary error tracker** — GitHub Issues reserved for planned work. Sentry handles deduplication, frequency tracking, and re-open-on-regression automatically.
+
+---
+
 ### Patch Set 3: Redis Rate Limiting (High) — DEFERRED
 
 **Problem:** In-memory rate limiter doesn't survive serverless cold starts or multi-instance deployments. `x-forwarded-for` header used for IP extraction is spoofable by clients.
@@ -2132,4 +2177,112 @@ const connectionString = process.env.DATABASE_URL_UNPOOLED ?? process.env.DATABA
 - **Root cause 2:** Even after `.env.local` was added, the browser console showed `Uncaught EvalError: ... 'unsafe-eval' is not an allowed source`. The CSP was blocking Next.js's HMR runtime, which uses `eval` to inject hot-reloaded modules. This prevented React from mounting, so the button had no click handler attached at all.
 - **Fix:** Added `isDev = process.env.NODE_ENV === 'development'` check to `next.config.mjs`; appended `'unsafe-eval'` to `script-src` only in dev mode.
 
+---
+
+## UI Polish — Warm Background Extended to Main App
+
+**Date:** 2026-04-17
+**Scope:** Single CSS variable change; no new components.
+
+### What We Changed
+
+- **`--background` CSS variable** (`src/app/globals.css` line 7) — changed from `240 24% 96%` (`#F2F2F7`, cool Apple system gray) to `38 22% 97%` (`#FAF9F7`, warm off-white). This is the same warm tone already used on the auth pages (`bg-[#FAF9F7]`), so the app now has a consistent background color end-to-end.
+
+### What We Tested and Rejected
+
+- **Floating card shadows** — trialed a custom `shadow-float` (`0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)`) on all card containers and inputs to give a "floating" appearance against the warm background. Reverted — the effect didn't work well with the existing border treatment.
+
+### Lesson
+
+Single CSS variable changes propagate everywhere automatically because every component uses `bg-background` via Tailwind. This is the payoff for using a design token system — a one-line change achieves global consistency with zero risk of missing a surface.
+
 **Key distinction learned:** Production builds don't need `unsafe-eval` because Next.js pre-compiles everything statically. Dev mode uses webpack HMR which requires `eval` to inject code changes on the fly. The CSP that works in production was actively breaking local development.
+
+---
+
+## Bug Fix — Sidebar Tooltip Z-Index
+
+**Date:** 2026-04-21
+**Scope:** One-line CSS fix to `sidebar.tsx`.
+
+### Problem
+
+When hovering over nav icons in the collapsed desktop sidebar, the tooltip label for some items (notably "Transaction History") appeared partially behind the main page content — the page heading text rendered on top of the tooltip bubble.
+
+### Root Cause
+
+The sidebar `<aside>` used `sticky top-0` but had no explicit `z-index`. In CSS, `position: sticky` without a z-index does **not** create a new stacking context. This means the sidebar and the main content area (a sibling flex child) both participate in the root stacking context, and since the main content div comes later in the DOM, it can paint on top of the sidebar's portaled tooltips in certain rendering scenarios.
+
+Radix UI renders tooltip content into `document.body` via a Portal with `z-50` on the content element. But without an explicit stacking context established on the sidebar, some browsers resolved the painting order ambiguously — causing the portaled tooltip to appear behind the page content in the same visual area.
+
+The reason it was inconsistent (first item worked, second didn't) is positional: the "New Transaction" tooltip appeared in an area of the page above the white card content, while "Transaction History" appeared at the same Y-level as the page heading — the area where the stacking ambiguity was visible.
+
+### Fix
+
+Added `z-40` to the sidebar `<aside>` in `src/components/layout/sidebar.tsx`:
+
+```
+"hidden lg:flex flex-col border-r bg-card h-screen sticky top-0 z-40 transition-all duration-200"
+```
+
+Adding `z-index` to a `sticky` element explicitly creates a stacking context for the sidebar. The layering is now deterministic: sidebar at z-40, tooltip portal at z-50, page content below both.
+
+### Lesson
+
+`position: sticky` alone does not create a stacking context — you need `z-index` too. Sticky sidebars should always carry an explicit `z-index` so that portaled overlays (tooltips, dropdowns, dialogs) layer correctly above sibling content. This is easy to miss because the bug is positional: it only appears where the portaled element's screen coordinates overlap with a sibling element that paints later in DOM order.
+
+`position: sticky` alone does not create a stacking context — you need `z-index` too. Sticky sidebars should always carry an explicit `z-index` so that portaled overlays (tooltips, dropdowns, dialogs) layer correctly above sibling content. This is easy to miss because the bug is positional: it only appears where the portaled element's screen coordinates overlap with a sibling element that paints later in DOM order.
+
+---
+
+## Mobile Responsiveness — Reports Page & Item Management
+
+**Date:** 2026-04-21
+**Scope:** Mobile layout fixes across reports and item management pages.
+
+### What We Fixed
+
+**Reports page — filter bar overflow causing charts not to render**
+
+- **Root cause:** The Consumption report filter bar had two `w-44` (176px) `Select` controls inside a `flex gap-2` container. Combined width (~360px) exceeded the usable viewport width (~343px) on a 375px mobile screen. This caused horizontal overflow, which pushed the Recharts `ResponsiveContainer` into a near-zero width state — charts rendered blank or failed silently.
+- **Fix:** Changed the filter wrapper from `flex gap-2` to `flex flex-wrap gap-2`, and made each `SelectTrigger` `w-full sm:w-44` so they each take their own row on mobile.
+- **Files:** `src/app/(main)/reports/consumption/page.tsx`
+
+**Cost Allocation loading skeleton — non-responsive grid**
+
+- **Root cause:** The loading skeleton used `grid grid-cols-3` with no responsive fallback. On mobile this forced three skeleton cards into a single row at ~96px each — extremely cramped.
+- **Fix:** Changed to `grid grid-cols-1 sm:grid-cols-3`.
+- **Files:** `src/app/(main)/reports/cost-allocation/page.tsx`
+
+**Cost Allocation chart — fixed height too tall for mobile**
+
+- **Root cause:** The chart used `height={340}` with `margin.bottom: 90` for angled X-axis labels — 430px total vertical space. On a 812px mobile screen this took over half the visible area.
+- **Fix:** Wrapped `ResponsiveContainer` in `<div className="h-48 sm:h-[340px]">` and passed `height="100%"` to the container. Reduced bottom margin from 90 to 60.
+- **Files:** `src/components/reports/cost-allocation-chart.tsx`
+
+**Item Management — 9-column table unusable on mobile**
+
+- **Root cause:** The `ItemsTable` component rendered a single 9-column HTML table at all viewport sizes. Below ~900px all columns compress to unreadable widths with no fallback.
+- **Fix:** Added a card-based layout (`md:hidden`) alongside the existing table (`hidden md:block`). Cards show item name, brand badge, stock status, category/unit/stock meta, cost/value, and labeled action buttons (`h-9` with icon + text) that meet the 44px touch target requirement. Desktop table is unchanged.
+- **Files:** `src/components/items/items-table.tsx`
+
+**Page header — cramped on mobile when action button is present**
+
+- **Root cause:** `PageHeader` used `flex items-center justify-between` — a single row. When the title was long ("Item Management") it wrapped mid-word and the button was crammed alongside it.
+- **Fix:** Changed to `flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between` so title/description stack above the button on mobile, side-by-side on desktop.
+- **Files:** `src/components/layout/page-header.tsx`
+
+**Item Management — Add New Item button relocated to filter row**
+
+- Moved the "Add New Item" button from the `PageHeader` children into the filter bar, inline with the search input. Leaves the header clean (title + description only) and puts the button immediately above the item list where it's most discoverable on mobile.
+- **Files:** `src/app/(main)/items/page.tsx`
+
+### Bugs Hit and Fixed
+
+**Recharts renders blank when parent width is 0**
+
+Recharts `ResponsiveContainer` measures its parent DOM element to determine chart width. If the parent has zero or near-zero width (caused by overflow from sibling elements), the chart simply renders nothing — no error, no fallback, just an empty card. The fix is always to ensure the containing element has a valid measured width, which means eliminating anything that can cause overflow upstream.
+
+**Fast Refresh resets auth state in headless preview**
+
+During local verification with the preview tool, every Fast Refresh cycle (triggered by file saves) caused the `AuthProvider` to remount, resetting `isLoading` to `true`. Because `page-header.tsx` is a layout-level component, updating it caused Next.js to include the layout in the hot-update bundle, which forced a full component tree remount. The session re-fetch took 1–2 seconds, and in the window between remount and re-fetch completion the page showed a loading spinner. This is purely a dev-mode behaviour — production users never experience it.

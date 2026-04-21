@@ -127,7 +127,7 @@ export function AdjustmentForm({
 
     onSubmit({
       itemId: data.itemId,
-      businessEntity: data.businessEntity as "Brand A" | "Brand B",
+      businessEntity: data.businessEntity as "Arcy's Kitchen" | "Bale Kapampangan",
       quantityChange,
       adjustmentReason: data.adjustmentReason as AdjustmentReason,
       adjustmentNotes: data.adjustmentNotes,
@@ -316,7 +316,7 @@ export function AdjustmentForm({
                   className={cn(
                     "flex cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition-colors",
                     field.value === brand
-                      ? brand === "Brand A"
+                      ? brand === "Arcy's Kitchen"
                         ? "border-red-600 bg-red-50"
                         : "border-green-600 bg-green-50"
                       : "border-input bg-card hover:border-muted-foreground"
@@ -327,7 +327,7 @@ export function AdjustmentForm({
                     className={cn(
                       "font-medium",
                       field.value === brand
-                        ? brand === "Brand A"
+                        ? brand === "Arcy's Kitchen"
                           ? "text-red-700"
                           : "text-green-700"
                         : ""

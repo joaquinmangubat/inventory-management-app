@@ -83,20 +83,20 @@ export default function ConsumptionReportPage() {
             setPreset(p);
           }}
         />
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Select value={businessEntity} onValueChange={setBusinessEntity}>
-            <SelectTrigger className="h-8 text-xs w-44">
+            <SelectTrigger className="h-8 text-xs w-full sm:w-44">
               <SelectValue placeholder="All Brands" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Brands</SelectItem>
-              <SelectItem value="Brand A">Brand A</SelectItem>
-              <SelectItem value="Brand B">Brand B</SelectItem>
+              <SelectItem value="Arcy's Kitchen">Arcy&apos;s Kitchen</SelectItem>
+              <SelectItem value="Bale Kapampangan">Bale Kapampangan</SelectItem>
             </SelectContent>
           </Select>
 
           <Select value={categoryId} onValueChange={setCategoryId}>
-            <SelectTrigger className="h-8 text-xs w-44">
+            <SelectTrigger className="h-8 text-xs w-full sm:w-44">
               <SelectValue placeholder="All Categories" />
             </SelectTrigger>
             <SelectContent>
@@ -144,7 +144,7 @@ export default function ConsumptionReportPage() {
                     className="text-xl font-bold"
                     style={{
                       color:
-                        b.businessEntity === "Brand A" ? "#DC2626" : "#16A34A",
+                        b.businessEntity === "Arcy's Kitchen" ? "#DC2626" : "#16A34A",
                     }}
                   >
                     {fmt(b.totalCost)}
@@ -199,12 +199,12 @@ export default function ConsumptionReportPage() {
                           className="text-xs font-medium"
                           style={{
                             color:
-                              row.businessEntity === "Brand A"
+                              row.businessEntity === "Arcy's Kitchen"
                                 ? "#DC2626"
                                 : "#16A34A",
                           }}
                         >
-                          {row.businessEntity === "Brand A" ? "Brand A" : "Brand B"}
+                          {row.businessEntity === "Arcy's Kitchen" ? "Arcy's" : "Bale"}
                         </span>
                       </TableCell>
                       <TableCell className="text-right text-sm">

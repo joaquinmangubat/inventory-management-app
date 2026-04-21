@@ -290,8 +290,8 @@ export function ItemForm({ item, onSubmit, isSubmitting }: ItemFormProps) {
                 </FormControl>
                 <SelectContent>
                   <SelectItem value="none">None (Shared)</SelectItem>
-                  <SelectItem value="arcys">Brand A</SelectItem>
-                  <SelectItem value="bale">Brand B</SelectItem>
+                  <SelectItem value="arcys">Arcy&apos;s Kitchen</SelectItem>
+                  <SelectItem value="bale">Bale Kapampangan</SelectItem>
                 </SelectContent>
               </Select>
               <FormDescription>

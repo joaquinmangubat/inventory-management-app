@@ -37,12 +37,12 @@ function TypeBadge({ type }: { type: string }) {
 }
 
 function BrandBadge({ brand }: { brand: string }) {
-  const isBrandA = brand === "Brand A";
+  const isArcys = brand === "Arcy's Kitchen";
   return (
     <Badge
       className={cn(
         "hover:opacity-100",
-        isBrandA
+        isArcys
           ? "bg-red-600 text-white hover:bg-red-600"
           : "bg-green-600 text-white hover:bg-green-600"
       )}

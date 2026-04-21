@@ -37,9 +37,15 @@ docs/FUTURE_IDEAS.md
 # archived files
 archived project files/
 
+# course output
+inventory-app-course/
+
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Sentry Config File
+.env.sentry-build-plugin

@@ -88,7 +88,7 @@ describe("createTransactionSchema", () => {
   it("accepts a valid add transaction", () => {
     const result = createTransactionSchema.safeParse({
       itemId: VALID_UUID,
-      businessEntity: "Brand A",
+      businessEntity: "Arcy's Kitchen",
       transactionType: "add",
       quantity: 5,
     });
@@ -108,7 +108,7 @@ describe("createTransactionSchema", () => {
   it("rejects zero quantity", () => {
     const result = createTransactionSchema.safeParse({
       itemId: VALID_UUID,
-      businessEntity: "Brand A",
+      businessEntity: "Arcy's Kitchen",
       transactionType: "add",
       quantity: 0,
     });
@@ -120,7 +120,7 @@ describe("createAdjustmentSchema", () => {
   it("accepts a valid negative correction", () => {
     const result = createAdjustmentSchema.safeParse({
       itemId: VALID_UUID,
-      businessEntity: "Brand A",
+      businessEntity: "Arcy's Kitchen",
       quantityChange: -5,
       adjustmentReason: "Damaged",
       adjustmentNotes: "Found broken items during stock check",
@@ -131,7 +131,7 @@ describe("createAdjustmentSchema", () => {
   it("rejects zero quantity change", () => {
     const result = createAdjustmentSchema.safeParse({
       itemId: VALID_UUID,
-      businessEntity: "Brand A",
+      businessEntity: "Arcy's Kitchen",
       quantityChange: 0,
       adjustmentReason: "Damaged",
       adjustmentNotes: "Some notes",
@@ -142,7 +142,7 @@ describe("createAdjustmentSchema", () => {
   it("rejects missing adjustment reason", () => {
     const result = createAdjustmentSchema.safeParse({
       itemId: VALID_UUID,
-      businessEntity: "Brand A",
+      businessEntity: "Arcy's Kitchen",
       quantityChange: -3,
       adjustmentNotes: "Some notes",
     });

@@ -43,7 +43,6 @@ function StockStatusBadge({ item }: { item: ItemWithCategory }) {
   );
 }
 
-
 export function ItemsTable({ items, onUpdatePrice }: ItemsTableProps) {
   const deactivate = useDeactivateItem();
   const activate = useActivateItem();
@@ -77,122 +76,227 @@ export function ItemsTable({ items, onUpdatePrice }: ItemsTableProps) {
   }
 
   return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Item</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Unit</TableHead>
-            <TableHead className="text-right">Stock</TableHead>
-            <TableHead className="text-right">Cost (PHP)</TableHead>
-            <TableHead className="text-right">Value (PHP)</TableHead>
-            <TableHead className="text-right">Reorder</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {items.map((item) => {
-            const cost = Number(item.currentUnitCostPhp);
-            const stock = Number(item.quantityInStock);
-            const value = cost * stock;
+    <>
+      {/* Mobile card list — hidden on md+ */}
+      <div className="space-y-2 md:hidden">
+        {items.map((item) => {
+          const cost = Number(item.currentUnitCostPhp);
+          const stock = Number(item.quantityInStock);
+          const value = cost * stock;
 
-            return (
-              <TableRow
-                key={item.id}
-                className={!item.isActive ? "opacity-60" : undefined}
-              >
-                <TableCell>
-                  <div className="flex flex-col gap-1">
-                    <span className="font-medium leading-tight">
-                      {item.itemDescription}
-                    </span>
-                    <div className="flex gap-1">
-                      <BusinessBadge business={item.primaryBusiness} />
-                      {!item.isActive && (
-                        <Badge variant="secondary" className="text-xs">
-                          Inactive
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {item.category.name}
-                </TableCell>
-                <TableCell className="text-sm">{item.unitOfMeasure}</TableCell>
-                <TableCell className="text-right">
-                  <div className="flex flex-col items-end gap-1">
-                    <span className="text-sm font-medium">
-                      {item.allowsDecimal
-                        ? stock.toFixed(2)
-                        : stock.toFixed(0)}
-                    </span>
-                    <StockStatusBadge item={item} />
-                  </div>
-                </TableCell>
-                <TableCell className="text-right text-sm">
-                  ₱{cost.toFixed(2)}
-                </TableCell>
-                <TableCell className="text-right text-sm font-medium">
-                  ₱{value.toFixed(2)}
-                </TableCell>
-                <TableCell className="text-right text-sm text-muted-foreground">
-                  {Number(item.reorderLevel).toFixed(0)}
-                </TableCell>
-                <TableCell>
-                  {item.isActive ? (
-                    <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
-                      Active
-                    </Badge>
-                  ) : (
-                    <Badge variant="secondary">Inactive</Badge>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <div className="flex justify-end gap-1">
-                    <Button variant="ghost" size="icon" asChild title="Edit item">
-                      <Link href={`/items/${item.id}/edit`}>
-                        <Pencil className="h-4 w-4" />
-                      </Link>
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      title="Update price"
-                      onClick={() => onUpdatePrice(item)}
-                    >
-                      <DollarSign className="h-4 w-4" />
-                    </Button>
-                    {item.isActive ? (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        title="Deactivate item"
-                        onClick={() => handleDeactivate(item)}
-                        disabled={deactivate.isPending}
-                      >
-                        <PowerOff className="h-4 w-4 text-destructive" />
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        title="Reactivate item"
-                        onClick={() => handleActivate(item)}
-                        disabled={activate.isPending}
-                      >
-                        <Power className="h-4 w-4 text-green-600" />
-                      </Button>
+          return (
+            <div
+              key={item.id}
+              className={`rounded-lg border bg-card p-4 shadow-sm${!item.isActive ? " opacity-60" : ""}`}
+            >
+              {/* Name + badges */}
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div className="flex flex-col gap-1">
+                  <span className="font-medium leading-tight">{item.itemDescription}</span>
+                  <div className="flex flex-wrap gap-1">
+                    <BusinessBadge business={item.primaryBusiness} />
+                    {!item.isActive && (
+                      <Badge variant="secondary" className="text-xs">Inactive</Badge>
                     )}
                   </div>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </div>
+                </div>
+                <StockStatusBadge item={item} />
+              </div>
+
+              {/* Meta row */}
+              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                <span>{item.category.name}</span>
+                <span>{item.unitOfMeasure}</span>
+                <span>
+                  Stock:{" "}
+                  <span className="font-medium text-foreground">
+                    {item.allowsDecimal ? stock.toFixed(2) : stock.toFixed(0)}
+                  </span>
+                </span>
+                <span>
+                  Reorder:{" "}
+                  <span className="font-medium text-foreground">
+                    {Number(item.reorderLevel).toFixed(0)}
+                  </span>
+                </span>
+              </div>
+
+              {/* Cost / Value row */}
+              <div className="mt-1 flex gap-4 text-xs text-muted-foreground">
+                <span>
+                  Cost:{" "}
+                  <span className="font-medium text-foreground">₱{cost.toFixed(2)}</span>
+                </span>
+                <span>
+                  Value:{" "}
+                  <span className="font-medium text-foreground">₱{value.toFixed(2)}</span>
+                </span>
+              </div>
+
+              {/* Actions */}
+              <div className="mt-3 flex flex-wrap gap-2 border-t pt-3">
+                <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs" asChild>
+                  <Link href={`/items/${item.id}/edit`}>
+                    <Pencil className="h-3.5 w-3.5" />
+                    Edit
+                  </Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-9 gap-1.5 text-xs"
+                  onClick={() => onUpdatePrice(item)}
+                >
+                  <DollarSign className="h-3.5 w-3.5" />
+                  Update Price
+                </Button>
+                {item.isActive ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-9 gap-1.5 text-xs text-destructive hover:text-destructive"
+                    onClick={() => handleDeactivate(item)}
+                    disabled={deactivate.isPending}
+                  >
+                    <PowerOff className="h-3.5 w-3.5" />
+                    Deactivate
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-9 gap-1.5 text-xs text-green-600 hover:text-green-700"
+                    onClick={() => handleActivate(item)}
+                    disabled={activate.isPending}
+                  >
+                    <Power className="h-3.5 w-3.5" />
+                    Reactivate
+                  </Button>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Desktop table — hidden below md */}
+      <div className="hidden md:block rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Item</TableHead>
+              <TableHead>Category</TableHead>
+              <TableHead>Unit</TableHead>
+              <TableHead className="text-right">Stock</TableHead>
+              <TableHead className="text-right">Cost (PHP)</TableHead>
+              <TableHead className="text-right">Value (PHP)</TableHead>
+              <TableHead className="text-right">Reorder</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {items.map((item) => {
+              const cost = Number(item.currentUnitCostPhp);
+              const stock = Number(item.quantityInStock);
+              const value = cost * stock;
+
+              return (
+                <TableRow
+                  key={item.id}
+                  className={!item.isActive ? "opacity-60" : undefined}
+                >
+                  <TableCell>
+                    <div className="flex flex-col gap-1">
+                      <span className="font-medium leading-tight">
+                        {item.itemDescription}
+                      </span>
+                      <div className="flex gap-1">
+                        <BusinessBadge business={item.primaryBusiness} />
+                        {!item.isActive && (
+                          <Badge variant="secondary" className="text-xs">
+                            Inactive
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {item.category.name}
+                  </TableCell>
+                  <TableCell className="text-sm">{item.unitOfMeasure}</TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex flex-col items-end gap-1">
+                      <span className="text-sm font-medium">
+                        {item.allowsDecimal
+                          ? stock.toFixed(2)
+                          : stock.toFixed(0)}
+                      </span>
+                      <StockStatusBadge item={item} />
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right text-sm">
+                    ₱{cost.toFixed(2)}
+                  </TableCell>
+                  <TableCell className="text-right text-sm font-medium">
+                    ₱{value.toFixed(2)}
+                  </TableCell>
+                  <TableCell className="text-right text-sm text-muted-foreground">
+                    {Number(item.reorderLevel).toFixed(0)}
+                  </TableCell>
+                  <TableCell>
+                    {item.isActive ? (
+                      <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+                        Active
+                      </Badge>
+                    ) : (
+                      <Badge variant="secondary">Inactive</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex justify-end gap-1">
+                      <Button variant="ghost" size="icon" asChild title="Edit item">
+                        <Link href={`/items/${item.id}/edit`}>
+                          <Pencil className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        title="Update price"
+                        onClick={() => onUpdatePrice(item)}
+                      >
+                        <DollarSign className="h-4 w-4" />
+                      </Button>
+                      {item.isActive ? (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          title="Deactivate item"
+                          onClick={() => handleDeactivate(item)}
+                          disabled={deactivate.isPending}
+                        >
+                          <PowerOff className="h-4 w-4 text-destructive" />
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          title="Reactivate item"
+                          onClick={() => handleActivate(item)}
+                          disabled={activate.isPending}
+                        >
+                          <Power className="h-4 w-4 text-green-600" />
+                        </Button>
+                      )}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </div>
+    </>
   );
 }

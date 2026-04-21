@@ -46,8 +46,8 @@ function AngledTick({ x, y, payload }: { x?: number; y?: number; payload?: { val
 export function CostAllocationChart({ byCategory }: CostAllocationChartProps) {
   const data = byCategory.map((c) => ({
     name: c.categoryName,
-    "Brand A": parseFloat(c.arcysCost.toFixed(2)),
-    "Brand B": parseFloat(c.baleCost.toFixed(2)),
+    "Arcy's Kitchen": parseFloat(c.arcysCost.toFixed(2)),
+    "Bale Kapampangan": parseFloat(c.baleCost.toFixed(2)),
   }));
 
   return (
@@ -56,14 +56,15 @@ export function CostAllocationChart({ byCategory }: CostAllocationChartProps) {
         <CardTitle className="text-sm font-medium">Cost by Category</CardTitle>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={340}>
-          <BarChart data={data} margin={{ top: 4, right: 8, left: 0, bottom: 90 }}>
+        <div className="h-48 sm:h-[340px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data} margin={{ top: 4, right: 8, left: 0, bottom: 60 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
             <XAxis
               dataKey="name"
               tick={<AngledTick />}
               interval={0}
-              height={90}
+              height={60}
             />
             <YAxis
               tickFormatter={(v) => `₱${(v / 1000).toFixed(0)}k`}
@@ -72,10 +73,11 @@ export function CostAllocationChart({ byCategory }: CostAllocationChartProps) {
             />
             <Tooltip formatter={fmt} />
             <Legend />
-            <Bar dataKey="Brand A" fill={ARCYS_COLOR} radius={[4, 4, 0, 0]} />
-            <Bar dataKey="Brand B" fill={BALE_COLOR} radius={[4, 4, 0, 0]} />
+            <Bar dataKey="Arcy's Kitchen" fill={ARCYS_COLOR} radius={[4, 4, 0, 0]} />
+            <Bar dataKey="Bale Kapampangan" fill={BALE_COLOR} radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
+        </div>
       </CardContent>
     </Card>
   );

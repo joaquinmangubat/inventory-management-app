@@ -230,7 +230,7 @@ export function TransactionForm({ onSubmitPreview }: TransactionFormProps) {
                   className={cn(
                     "flex items-center gap-3 rounded-lg border-2 p-3 cursor-pointer transition-colors",
                     field.value === brand
-                      ? brand === "Brand A"
+                      ? brand === "Arcy's Kitchen"
                         ? "border-red-600 bg-red-50"
                         : "border-green-600 bg-green-50"
                       : "border-input bg-card hover:border-muted-foreground"
@@ -241,7 +241,7 @@ export function TransactionForm({ onSubmitPreview }: TransactionFormProps) {
                     className={cn(
                       "font-medium",
                       field.value === brand
-                        ? brand === "Brand A"
+                        ? brand === "Arcy's Kitchen"
                           ? "text-red-700"
                           : "text-green-700"
                         : ""

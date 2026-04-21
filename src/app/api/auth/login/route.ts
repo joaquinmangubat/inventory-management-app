@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs";
 import { NextResponse } from "next/server";
 import { compare } from "bcryptjs";
 import { db } from "@/lib/db";
@@ -99,7 +100,8 @@ export async function POST(request: Request) {
         mustChangePassword: user.mustChangePassword,
       },
     });
-  } catch {
+  } catch (err) {
+    Sentry.captureException(err);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

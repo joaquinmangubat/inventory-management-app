@@ -72,23 +72,24 @@ export default function ItemsPage() {
 
   return (
     <div className="space-y-6 p-4 md:p-6">
-      <PageHeader title="Item Management" description="Manage inventory items for both brands.">
-        <Button onClick={() => router.push("/items/new")}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add New Item
-        </Button>
-      </PageHeader>
+      <PageHeader title="Item Management" description="Manage inventory items for both brands." />
 
       {/* Filters */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search items..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
-          />
+        <div className="relative flex-1 flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search items..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+          <Button onClick={() => router.push("/items/new")} className="shrink-0">
+            <Plus className="mr-2 h-4 w-4" />
+            Add New Item
+          </Button>
         </div>
 
         <Select

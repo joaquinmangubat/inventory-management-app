@@ -9,21 +9,21 @@ export function BusinessBadge({ business }: BusinessBadgeProps) {
   if (!business || business === "shared") {
     return (
       <>
-        <Badge className="bg-arcys-50 text-arcys-700 hover:bg-arcys-50">{"Brand A"}</Badge>
-        <Badge className="bg-green-50 text-green-700 hover:bg-green-50">Brand B</Badge>
+        <Badge className="bg-arcys-50 text-arcys-700 hover:bg-arcys-50">{"Arcy's"}</Badge>
+        <Badge className="bg-bale-50 text-bale-700 hover:bg-bale-50">Bale</Badge>
       </>
     );
   }
-  const isBrandA = business === "arcys";
+  const isArcys = business === "arcys";
   return (
     <Badge
       className={
-        isBrandA
+        isArcys
           ? "bg-arcys-50 text-arcys-700 hover:bg-arcys-50"
           : "bg-bale-50 text-bale-700 hover:bg-bale-50"
       }
     >
-      {isBrandA ? "Brand A" : "Brand B"}
+      {isArcys ? "Arcy's" : "Bale"}
     </Badge>
   );
 }

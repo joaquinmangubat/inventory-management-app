@@ -13,7 +13,7 @@ export const createItemSchema = z.object({
     .number({ error: "Reorder level must be a number" })
     .min(0, "Reorder level cannot be negative"),
   orderCode: z.string().max(100).optional().nullable(),
-  primaryBusiness: z.enum(["brand_a", "brand_b", "shared"]).optional().nullable(),
+  primaryBusiness: z.enum(["arcys", "bale", "shared"]).optional().nullable(),
   primarySupplier: z.string().max(255).optional().nullable(),
   alternativeSuppliers: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),

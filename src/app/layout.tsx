@@ -1,18 +1,24 @@
+import * as Sentry from "@sentry/nextjs";
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { QueryProvider } from "@/providers/query-provider";
 import { Toaster } from "@/components/ui/sonner";
 
-export const metadata: Metadata = {
-  title: "Inventory Management",
-  description:
-    "Inventory management system for Brand A and Brand B",
-  appleWebApp: {
-    capable: true,
-    title: "Inventory",
-    statusBarStyle: "default",
-  },
-};
+export function generateMetadata(): Metadata {
+  return {
+    title: "Inventory Management",
+    description:
+      "Inventory management system for Arcy's Kitchen and Bale Kapampangan",
+    appleWebApp: {
+      capable: true,
+      title: "Inventory",
+      statusBarStyle: "default",
+    },
+    other: {
+      ...Sentry.getTraceData(),
+    },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: "#DC2626",

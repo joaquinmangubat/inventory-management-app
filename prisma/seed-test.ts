@@ -148,7 +148,7 @@ async function main() {
       quantityInStock: 20,
       currentUnitCostPhp: 85,
       reorderLevel: 5,
-      primaryBusiness: "Brand A",
+      primaryBusiness: "Arcy's Kitchen",
       createdByUserId: owner.id,
     },
   });
@@ -164,7 +164,7 @@ async function main() {
       quantityInStock: 0,
       currentUnitCostPhp: 45,
       reorderLevel: 5,
-      primaryBusiness: "Brand B",
+      primaryBusiness: "Bale Kapampangan",
       createdByUserId: owner.id,
     },
   });
@@ -211,7 +211,7 @@ async function main() {
   await prisma.transaction.create({
     data: {
       itemId: chickenBreast.id,
-      businessEntity: "Brand A",
+      businessEntity: "Arcy's Kitchen",
       transactionType: "add",
       quantityChange: 50,
       stockAfterTransaction: 50,
@@ -225,7 +225,7 @@ async function main() {
   await prisma.transaction.create({
     data: {
       itemId: chickenBreast.id,
-      businessEntity: "Brand A",
+      businessEntity: "Arcy's Kitchen",
       transactionType: "consume",
       quantityChange: -5,
       stockAfterTransaction: 45,
@@ -238,7 +238,7 @@ async function main() {
   await prisma.transaction.create({
     data: {
       itemId: chickenBreast.id,
-      businessEntity: "Brand B",
+      businessEntity: "Bale Kapampangan",
       transactionType: "consume",
       quantityChange: -10,
       stockAfterTransaction: 35,
@@ -265,7 +265,7 @@ async function main() {
   await prisma.transaction.create({
     data: {
       itemId: cookingOil.id,
-      businessEntity: "Brand A",
+      businessEntity: "Arcy's Kitchen",
       transactionType: "consume",
       quantityChange: -17,
       stockAfterTransaction: 3,
@@ -282,7 +282,7 @@ async function main() {
   await prisma.transaction.create({
     data: {
       itemId: freshMilk.id,
-      businessEntity: "Brand A",
+      businessEntity: "Arcy's Kitchen",
       transactionType: "add",
       quantityChange: 12,
       stockAfterTransaction: 12,
@@ -298,7 +298,7 @@ async function main() {
   await prisma.transaction.create({
     data: {
       itemId: freshMilk.id,
-      businessEntity: "Brand A",
+      businessEntity: "Arcy's Kitchen",
       transactionType: "add",
       quantityChange: 8,
       stockAfterTransaction: 20,

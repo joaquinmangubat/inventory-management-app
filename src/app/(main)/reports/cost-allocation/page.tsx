@@ -46,8 +46,8 @@ export default function CostAllocationPage() {
 
   const exportHeaders = [
     { key: "categoryName", label: "Category" },
-    { key: "arcysCost", label: "Brand A (PHP)" },
-    { key: "baleCost", label: "Brand B (PHP)" },
+    { key: "arcysCost", label: "Arcy's Kitchen (PHP)" },
+    { key: "baleCost", label: "Bale Kapampangan (PHP)" },
     { key: "totalCost", label: "Total (PHP)" },
   ];
 
@@ -77,7 +77,7 @@ export default function CostAllocationPage() {
 
       {isLoading ? (
         <div className="space-y-4">
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <Skeleton className="h-20 rounded-lg" />
             <Skeleton className="h-20 rounded-lg" />
             <Skeleton className="h-20 rounded-lg" />
@@ -96,7 +96,7 @@ export default function CostAllocationPage() {
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <Card>
               <CardContent className="pt-4 pb-4">
-                <p className="text-xs text-muted-foreground">Brand A</p>
+                <p className="text-xs text-muted-foreground">Arcy&apos;s Kitchen</p>
                 <p className="text-xl font-bold text-red-600">
                   {fmt(data.summary.arcysTotal)}
                 </p>
@@ -104,7 +104,7 @@ export default function CostAllocationPage() {
             </Card>
             <Card>
               <CardContent className="pt-4 pb-4">
-                <p className="text-xs text-muted-foreground">Brand B</p>
+                <p className="text-xs text-muted-foreground">Bale Kapampangan</p>
                 <p className="text-xl font-bold text-green-600">
                   {fmt(data.summary.baleTotal)}
                 </p>
@@ -131,9 +131,9 @@ export default function CostAllocationPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Category</TableHead>
-                    <TableHead className="text-right text-red-600">Brand A</TableHead>
+                    <TableHead className="text-right text-red-600">Arcy&apos;s Kitchen</TableHead>
                     <TableHead className="text-right text-green-600">
-                      Brand B
+                      Bale Kapampangan
                     </TableHead>
                     <TableHead className="text-right">Total</TableHead>
                   </TableRow>

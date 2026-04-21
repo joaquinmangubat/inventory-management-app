@@ -179,7 +179,7 @@ export default function EditTransactionPage({ params }: { params: { id: string }
                     className={cn(
                       "flex items-center gap-3 rounded-lg border-2 p-3 cursor-pointer transition-colors",
                       field.value === brand
-                        ? brand === "Brand A"
+                        ? brand === "Arcy's Kitchen"
                           ? "border-red-600 bg-red-50"
                           : "border-green-600 bg-green-50"
                         : "border-input hover:border-muted-foreground"
@@ -190,7 +190,7 @@ export default function EditTransactionPage({ params }: { params: { id: string }
                       className={cn(
                         "font-medium",
                         field.value === brand
-                          ? brand === "Brand A"
+                          ? brand === "Arcy's Kitchen"
                             ? "text-red-700"
                             : "text-green-700"
                           : ""

@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 export const BUSINESS_ENTITIES = [
-  "Brand A",
-  "Brand B",
+  "Arcy's Kitchen",
+  "Bale Kapampangan",
 ] as const;
 
 export const TRANSACTION_TYPES = ["add", "consume"] as const;

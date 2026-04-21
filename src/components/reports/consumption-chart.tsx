@@ -45,9 +45,9 @@ interface ConsumptionChartProps {
 
 export function ConsumptionChart({ report }: ConsumptionChartProps) {
   const businessData = report.byBusiness.map((b) => ({
-    name: b.businessEntity === "Brand A" ? "Brand A" : "Brand B",
+    name: b.businessEntity === "Arcy's Kitchen" ? "Arcy's" : "Bale",
     cost: parseFloat(b.totalCost.toFixed(2)),
-    fill: b.businessEntity === "Brand A" ? ARCYS_COLOR : BALE_COLOR,
+    fill: b.businessEntity === "Arcy's Kitchen" ? ARCYS_COLOR : BALE_COLOR,
   }));
 
   const categoryData = report.byCategory.slice(0, 10).map((c) => ({
@@ -57,8 +57,8 @@ export function ConsumptionChart({ report }: ConsumptionChartProps) {
 
   const lineData = report.byDate.map((d) => ({
     date: d.date.slice(5), // MM-DD
-    "Brand A": parseFloat(d.arcysCost.toFixed(2)),
-    "Brand B": parseFloat(d.baleCost.toFixed(2)),
+    "Arcy's": parseFloat(d.arcysCost.toFixed(2)),
+    Bale: parseFloat(d.baleCost.toFixed(2)),
   }));
 
   return (
@@ -145,14 +145,14 @@ export function ConsumptionChart({ report }: ConsumptionChartProps) {
                 <Legend />
                 <Line
                   type="monotone"
-                  dataKey="Brand A"
+                  dataKey="Arcy's"
                   stroke={ARCYS_COLOR}
                   strokeWidth={2}
                   dot={false}
                 />
                 <Line
                   type="monotone"
-                  dataKey="Brand B"
+                  dataKey="Bale"
                   stroke={BALE_COLOR}
                   strokeWidth={2}
                   dot={false}

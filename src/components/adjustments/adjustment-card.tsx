@@ -32,7 +32,7 @@ export function AdjustmentCard({
   const currentStock = Number(adjustment.item.quantityInStock);
   const projectedStock = currentStock + qty;
   const sign = qty > 0 ? "+" : "";
-  const isBrandA = adjustment.businessEntity === "Brand A";
+  const isArcys = adjustment.businessEntity === "Arcy's Kitchen";
 
   return (
     <div className="rounded-lg border bg-card p-4 space-y-3 shadow-sm">
@@ -48,7 +48,7 @@ export function AdjustmentCard({
         <Badge
           className={cn(
             "shrink-0 text-xs font-medium border-0",
-            isBrandA
+            isArcys
               ? "bg-red-100 text-red-700"
               : "bg-green-100 text-green-700"
           )}

@@ -71,7 +71,7 @@ export function Sidebar() {
     <TooltipProvider delayDuration={0}>
       <aside
         className={cn(
-          "hidden lg:flex flex-col border-r bg-card h-screen sticky top-0 transition-all duration-200",
+          "hidden lg:flex flex-col border-r bg-card h-screen sticky top-0 z-40 transition-all duration-200",
           collapsed ? "w-16" : "w-60"
         )}
       >
@@ -81,7 +81,7 @@ export function Sidebar() {
             <div className="flex-1 min-w-0">
               <h2 className="text-sm font-bold truncate">Inventory</h2>
               <p className="text-xs text-muted-foreground truncate">
-                Brand A &amp; Brand B
+                Arcy&apos;s &amp; Bale
               </p>
             </div>
           )}

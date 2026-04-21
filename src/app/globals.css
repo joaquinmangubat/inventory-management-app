@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 240 24% 96%;        /* #F2F2F7 — Apple system grouped background */
+    --background: 38 22% 97%;          /* #FAF9F7 — warm off-white (matches auth pages) */
     --foreground: 0 0% 0%;            /* #000000 */
     --card: 0 0% 100%;                /* #FFFFFF */
     --card-foreground: 0 0% 0%;

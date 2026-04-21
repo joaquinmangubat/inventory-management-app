@@ -55,7 +55,7 @@ export async function GET(request: Request) {
         arcysCost: 0,
         baleCost: 0,
       };
-      if (t.businessEntity === "Brand A") {
+      if (t.businessEntity === "Arcy's Kitchen") {
         entry.arcysCost += cost;
         arcysTotal += cost;
       } else {
