@@ -38,7 +38,7 @@ const mockItem = {
 const mockTransaction = {
   id: "txn-1",
   itemId: ITEM_UUID,
-  businessEntity: "Arcy's Kitchen",
+  businessEntity: "Business A",
   transactionType: "consume",
   quantityChange: -5,
   stockAfterTransaction: 95,
@@ -94,7 +94,7 @@ describe("POST /api/transactions", () => {
 
     const req = makeRequest({
       itemId: ITEM_UUID,
-      businessEntity: "Arcy's Kitchen",
+      businessEntity: "Business A",
       transactionType: "consume",
       quantity: 5,
     });
@@ -111,7 +111,7 @@ describe("POST /api/transactions", () => {
 
     const req = makeRequest({
       itemId: ITEM_UUID,
-      businessEntity: "Arcy's Kitchen",
+      businessEntity: "Business A",
       transactionType: "consume",
       quantity: 1.5,
     });
@@ -131,7 +131,7 @@ describe("POST /api/transactions", () => {
 
     const req = makeRequest({
       itemId: ITEM_UUID,
-      businessEntity: "Arcy's Kitchen",
+      businessEntity: "Business A",
       transactionType: "add",
       quantity: 5,
       // expirationDate intentionally omitted
@@ -148,7 +148,7 @@ describe("POST /api/transactions", () => {
 
     const req = makeRequest({
       itemId: ITEM_UUID,
-      businessEntity: "Arcy's Kitchen",
+      businessEntity: "Business A",
       transactionType: "consume",
       quantity: 5,
     });
@@ -175,7 +175,7 @@ describe("PUT /api/transactions/[id]", () => {
     ]);
 
     const req = makePutRequest({
-      businessEntity: "Arcy's Kitchen",
+      businessEntity: "Business A",
       quantity: 10,
     });
 
@@ -194,7 +194,7 @@ describe("PUT /api/transactions/[id]", () => {
     (db.systemSetting.findUnique as Mock).mockResolvedValue(null); // default 5 min window
 
     const req = makePutRequest({
-      businessEntity: "Arcy's Kitchen",
+      businessEntity: "Business A",
       quantity: 10,
     });
 
@@ -212,7 +212,7 @@ describe("PUT /api/transactions/[id]", () => {
     });
 
     const req = makePutRequest({
-      businessEntity: "Arcy's Kitchen",
+      businessEntity: "Business A",
       quantity: 10,
     });
 

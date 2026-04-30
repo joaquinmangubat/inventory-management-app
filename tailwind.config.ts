@@ -11,7 +11,7 @@ const config: Config = {
     extend: {
       colors: {
         // Brand colors
-        "arcys": {
+        "brand-a": {
           DEFAULT: "#DC2626",
           50: "#FEF2F2",
           100: "#FEE2E2",
@@ -19,7 +19,7 @@ const config: Config = {
           600: "#B91C1C",
           700: "#991B1B",
         },
-        "bale": {
+        "brand-b": {
           DEFAULT: "#16A34A",
           50: "#F0FDF4",
           100: "#DCFCE7",

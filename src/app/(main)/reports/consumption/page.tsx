@@ -90,8 +90,8 @@ export default function ConsumptionReportPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Brands</SelectItem>
-              <SelectItem value="Arcy's Kitchen">Arcy&apos;s Kitchen</SelectItem>
-              <SelectItem value="Bale Kapampangan">Bale Kapampangan</SelectItem>
+              <SelectItem value="Business A">Business A</SelectItem>
+              <SelectItem value="Business B">Business B</SelectItem>
             </SelectContent>
           </Select>
 
@@ -144,7 +144,7 @@ export default function ConsumptionReportPage() {
                     className="text-xl font-bold"
                     style={{
                       color:
-                        b.businessEntity === "Arcy's Kitchen" ? "#DC2626" : "#16A34A",
+                        b.businessEntity === "Business A" ? "#DC2626" : "#16A34A",
                     }}
                   >
                     {fmt(b.totalCost)}
@@ -199,12 +199,12 @@ export default function ConsumptionReportPage() {
                           className="text-xs font-medium"
                           style={{
                             color:
-                              row.businessEntity === "Arcy's Kitchen"
+                              row.businessEntity === "Business A"
                                 ? "#DC2626"
                                 : "#16A34A",
                           }}
                         >
-                          {row.businessEntity === "Arcy's Kitchen" ? "Arcy's" : "Bale"}
+                          {row.businessEntity === "Business A" ? "Business A" : "Business B"}
                         </span>
                       </TableCell>
                       <TableCell className="text-right text-sm">

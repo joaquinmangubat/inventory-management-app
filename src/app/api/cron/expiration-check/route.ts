@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/nextjs";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
@@ -125,8 +124,7 @@ export async function GET(request: Request) {
       checked: items.length,
       created: toCreate.length,
     });
-  } catch (err) {
-    Sentry.captureException(err);
+  } catch {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

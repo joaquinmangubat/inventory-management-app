@@ -13,8 +13,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { CostAllocationByCategory } from "@/types/reports";
 
-const ARCYS_COLOR = "#DC2626";
-const BALE_COLOR = "#16A34A";
+const BRAND_A_COLOR = "#DC2626";
+const BRAND_B_COLOR = "#16A34A";
 
 const fmt = (v: number | undefined) =>
   v !== undefined
@@ -46,8 +46,8 @@ function AngledTick({ x, y, payload }: { x?: number; y?: number; payload?: { val
 export function CostAllocationChart({ byCategory }: CostAllocationChartProps) {
   const data = byCategory.map((c) => ({
     name: c.categoryName,
-    "Arcy's Kitchen": parseFloat(c.arcysCost.toFixed(2)),
-    "Bale Kapampangan": parseFloat(c.baleCost.toFixed(2)),
+    "Business A": parseFloat(c.arcysCost.toFixed(2)),
+    "Business B": parseFloat(c.baleCost.toFixed(2)),
   }));
 
   return (
@@ -73,8 +73,8 @@ export function CostAllocationChart({ byCategory }: CostAllocationChartProps) {
             />
             <Tooltip formatter={fmt} />
             <Legend />
-            <Bar dataKey="Arcy's Kitchen" fill={ARCYS_COLOR} radius={[4, 4, 0, 0]} />
-            <Bar dataKey="Bale Kapampangan" fill={BALE_COLOR} radius={[4, 4, 0, 0]} />
+            <Bar dataKey="Business A" fill={BRAND_A_COLOR} radius={[4, 4, 0, 0]} />
+            <Bar dataKey="Business B" fill={BRAND_B_COLOR} radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
         </div>

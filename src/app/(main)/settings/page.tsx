@@ -501,8 +501,8 @@ export default function SettingsPage() {
             {APP_VERSION}
           </p>
           <p>
-            <span className="font-medium text-foreground">Brands:</span> Arcy&rsquo;s Kitchen
-            &amp; Bale Kapampangan
+            <span className="font-medium text-foreground">Brands:</span> Brand A
+            &amp; Brand B
           </p>
           <p>
             <span className="font-medium text-foreground">Support:</span>{" "}

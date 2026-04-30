@@ -7,7 +7,7 @@ export function generateMetadata(): Metadata {
   return {
     title: "Inventory Management",
     description:
-      "Inventory management system for Arcy's Kitchen and Bale Kapampangan",
+      "Full-stack inventory management system for multi-brand restaurant operations",
     appleWebApp: {
       capable: true,
       title: "Inventory",

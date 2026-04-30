@@ -18,8 +18,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { ConsumptionReport } from "@/types/reports";
 
-const ARCYS_COLOR = "#DC2626";
-const BALE_COLOR = "#16A34A";
+const BRAND_A_COLOR = "#DC2626";
+const BRAND_B_COLOR = "#16A34A";
 
 const PIE_COLORS = [
   "#3B82F6",
@@ -45,9 +45,9 @@ interface ConsumptionChartProps {
 
 export function ConsumptionChart({ report }: ConsumptionChartProps) {
   const businessData = report.byBusiness.map((b) => ({
-    name: b.businessEntity === "Arcy's Kitchen" ? "Arcy's" : "Bale",
+    name: b.businessEntity === "Business A" ? "Business A" : "Business B",
     cost: parseFloat(b.totalCost.toFixed(2)),
-    fill: b.businessEntity === "Arcy's Kitchen" ? ARCYS_COLOR : BALE_COLOR,
+    fill: b.businessEntity === "Business A" ? BRAND_A_COLOR : BRAND_B_COLOR,
   }));
 
   const categoryData = report.byCategory.slice(0, 10).map((c) => ({
@@ -57,8 +57,8 @@ export function ConsumptionChart({ report }: ConsumptionChartProps) {
 
   const lineData = report.byDate.map((d) => ({
     date: d.date.slice(5), // MM-DD
-    "Arcy's": parseFloat(d.arcysCost.toFixed(2)),
-    Bale: parseFloat(d.baleCost.toFixed(2)),
+    "Brand A": parseFloat(d.arcysCost.toFixed(2)),
+    "Brand B": parseFloat(d.baleCost.toFixed(2)),
   }));
 
   return (
@@ -145,15 +145,15 @@ export function ConsumptionChart({ report }: ConsumptionChartProps) {
                 <Legend />
                 <Line
                   type="monotone"
-                  dataKey="Arcy's"
-                  stroke={ARCYS_COLOR}
+                  dataKey="Brand A"
+                  stroke={BRAND_A_COLOR}
                   strokeWidth={2}
                   dot={false}
                 />
                 <Line
                   type="monotone"
-                  dataKey="Bale"
-                  stroke={BALE_COLOR}
+                  dataKey="Brand B"
+                  stroke={BRAND_B_COLOR}
                   strokeWidth={2}
                   dot={false}
                 />

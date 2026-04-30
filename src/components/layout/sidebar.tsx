@@ -81,7 +81,7 @@ export function Sidebar() {
             <div className="flex-1 min-w-0">
               <h2 className="text-sm font-bold truncate">Inventory</h2>
               <p className="text-xs text-muted-foreground truncate">
-                Arcy&apos;s &amp; Bale
+                Brand A & Brand B
               </p>
             </div>
           )}

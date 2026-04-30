@@ -687,7 +687,7 @@ const result = items.flatMap((item) => {
 |------|---------|
 | `src/app/api/items/expiring/route.ts` | GET — items with expiring/expired transaction dates |
 | `src/hooks/use-expiring-items.ts` | `useExpiringItems()` — 2-min stale time |
-| `src/components/shared/business-badge.tsx` | Shared Arcy's (red) / Bale (green) brand badge |
+| `src/components/shared/business-badge.tsx` | Shared Business A (red) / Bale (green) brand badge |
 | `src/components/dashboard/stock-summary-bar.tsx` | 4 stat cards: Total Items, Low Stock, Expiring, Total Value |
 | `src/components/dashboard/item-card.tsx` | Card: brand badge, stock status, value, reorder progress bar, expiry warning |
 | `src/components/dashboard/expiring-soon-section.tsx` | Collapsible: expired/expiring items with "Submit Adjustment" link for expired |
@@ -1093,11 +1093,11 @@ Earlier in the session the `git filter-repo` history rewrite (to purge a committ
 ### Subtasks Completed
 
 1. Create `GET /api/reports/consumption` route — owner only, filters: dateFrom, dateTo, businessEntity, categoryId; aggregates `consume` transactions by business, category, date, and item; returns byBusiness, byCategory, byDate, rows
-2. Create `GET /api/reports/cost-allocation` route — owner only, filters: dateFrom, dateTo; aggregates `consume` transactions into Arcy's/Bale totals per category; returns summary + byCategory breakdown
+2. Create `GET /api/reports/cost-allocation` route — owner only, filters: dateFrom, dateTo; aggregates `consume` transactions into Business A/Bale totals per category; returns summary + byCategory breakdown
 3. Create `GET /api/reports/low-stock` route — all users; classifies all active items as critical/low/healthy by stock vs. reorder level; reuses expiring-items logic from `/api/items/expiring`; returns lowStock + expiringItems payloads
 4. Build `src/hooks/use-reports.ts` with `useConsumptionReport`, `useCostAllocationReport`, `useLowStockReport` — 2-minute staleTime, filter-aware query keys
 5. Build shared report components: `ReportsNav` (tab bar linking between reports, visibility gated by role), `DateRangeSelector` (preset buttons + custom date inputs), `ExportButton` (client-side CSV generation + download trigger)
-6. Build chart components: `ConsumptionChart` (bar by brand, pie by category, line trend over time using Recharts), `CostAllocationChart` (grouped bar chart by category, Arcy's red / Bale green)
+6. Build chart components: `ConsumptionChart` (bar by brand, pie by category, line trend over time using Recharts), `CostAllocationChart` (grouped bar chart by category, Business A red / Bale green)
 7. Build data table components: `LowStockTable` (severity-sorted, red/yellow/green badges), `ExpiringItemsTable` (expired/expiring-soon badges with days-remaining column)
 8. Build `/reports/page.tsx` — smart redirect: owners → `/reports/consumption`, staff → `/reports/low-stock`
 9. Build `/reports/consumption/page.tsx` — owner-only, brand + category filters, summary cards, charts, detail table, CSV export
@@ -1672,7 +1672,7 @@ Three issues identified during the first manual testing pass:
 
 Five issues identified during the second manual testing pass:
 
-1. **Transaction confirmation modal had brand colors** — The preview popup displayed a full-width colored banner (red for Arcy's Kitchen, green for Bale Kapampangan) at the top of the dialog. Tester feedback: unnecessary color, the brand name is enough. Removed the colored banner entirely. Brand name is now shown as a plain text row inside the details list alongside Item, Action, and New Stock.
+1. **Transaction confirmation modal had brand colors** — The preview popup displayed a full-width colored banner (red for Business A, green for Business B) at the top of the dialog. Tester feedback: unnecessary color, the brand name is enough. Removed the colored banner entirely. Brand name is now shown as a plain text row inside the details list alongside Item, Action, and New Stock.
 
 2. **Edit transaction page threw a runtime error** — Clicking "Edit" on a recent transaction produced: `Unhandled Runtime Error — Error: An unsupported type was passed to use(): [object Object]`. Root cause: the edit page was using React's `use()` hook to unwrap `params` as a Promise — the Next.js 15 pattern. But this project runs Next.js 14.2.x where `params` is still a plain synchronous object. Passing a plain object to `use()` throws. Fixed by removing `use()` and destructuring `params` directly.
 
@@ -1907,7 +1907,7 @@ The layout had two layers: `CategoryRow` rendered the pencil button as the last 
 
 ### Fix 3: Item Management — shared items showing no brand tags
 
-**Problem:** Items assigned to both brands (i.e., shared items) showed no brand badges in the item table. Brand-specific items correctly showed either the Arcy's or Bale badge, but shared items appeared with no tag at all.
+**Problem:** Items assigned to both brands (i.e., shared items) showed no brand badges in the item table. Brand-specific items correctly showed either the Business A or Bale badge, but shared items appeared with no tag at all.
 
 **Root cause — two layers:**
 
@@ -1933,7 +1933,7 @@ So shared items are stored as `primaryBusiness = null` in the database — never
 if (!business || business === "shared") {
   return (
     <>
-      <Badge ...>{"Arcy's"}</Badge>
+      <Badge ...>{"Business A"}</Badge>
       <Badge ...>Bale</Badge>
     </>
   );

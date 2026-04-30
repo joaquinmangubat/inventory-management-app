@@ -4,7 +4,7 @@ export type TransactionType =
   | "adjust_pending"
   | "adjust_approved"
   | "adjust_rejected";
-export type BusinessEntity = "Arcy's Kitchen" | "Bale Kapampangan";
+export type BusinessEntity = "Business A" | "Business B";
 
 export interface Transaction {
   id: string;

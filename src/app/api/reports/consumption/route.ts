@@ -91,7 +91,7 @@ export async function GET(request: Request) {
       const qty = Math.abs(Number(t.quantityChange));
       const cost = qty * Number(t.unitCostAtTransaction);
       const entry = dateMap.get(date) ?? { arcysCost: 0, baleCost: 0 };
-      if (t.businessEntity === "Arcy's Kitchen") entry.arcysCost += cost;
+      if (t.businessEntity === "Business A") entry.arcysCost += cost;
       else entry.baleCost += cost;
       dateMap.set(date, entry);
     }

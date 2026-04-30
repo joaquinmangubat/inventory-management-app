@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Inventory — Arcy's & Bale",
+    name: "Inventory Management",
     short_name: "Inventory",
     start_url: "/dashboard",
     display: "standalone",

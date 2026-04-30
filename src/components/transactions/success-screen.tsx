@@ -45,8 +45,8 @@ export function SuccessScreen({
   const seconds = secondsLeft % 60;
   const timeLabel = `${minutes}:${String(seconds).padStart(2, "0")}`;
 
-  const isArcys = transaction.businessEntity === "Arcy's Kitchen";
-  const brandColor = isArcys ? "bg-red-600" : "bg-green-600";
+  const isBrandA = transaction.businessEntity === "Business A";
+  const brandColor = isBrandA ? "bg-red-600" : "bg-green-600";
 
   const quantityAbs = Math.abs(Number(transaction.quantityChange));
   const action =

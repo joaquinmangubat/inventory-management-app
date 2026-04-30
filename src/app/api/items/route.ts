@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/nextjs";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getSessionFromCookie } from "@/lib/auth";
@@ -29,8 +28,7 @@ export async function GET(request: Request) {
     });
 
     return NextResponse.json({ items });
-  } catch (err) {
-    Sentry.captureException(err);
+  } catch {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -94,8 +92,7 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ item }, { status: 201 });
-  } catch (err) {
-    Sentry.captureException(err);
+  } catch {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
