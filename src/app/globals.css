@@ -10,19 +10,19 @@
     --card-foreground: 0 0% 0%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 0%;
-    --primary: 211 100% 50%;          /* #007AFF — Apple system blue */
+    --primary: 0 0% 18%;              /* #2d2d2d — charcoal */
     --primary-foreground: 0 0% 100%;
     --secondary: 240 11% 91%;         /* #E5E5EA */
     --secondary-foreground: 240 1% 11%; /* #1C1C1E */
     --muted: 240 11% 91%;             /* #E5E5EA */
     --muted-foreground: 240 2% 57%;   /* #8E8E93 — Apple secondary label */
-    --accent: 211 100% 95%;           /* #007AFF @ 10% on white — active nav tint */
-    --accent-foreground: 211 100% 50%; /* #007AFF */
+    --accent: 0 0% 92%;               /* #EBEBEB — charcoal tint, active nav bg */
+    --accent-foreground: 0 0% 18%;    /* #2d2d2d */
     --destructive: 3 100% 59%;        /* #FF3B30 — Apple system red */
     --destructive-foreground: 0 0% 100%;
     --border: 240 6% 83%;             /* #D1D1D6 */
     --input: 240 6% 83%;
-    --ring: 211 100% 50%;             /* #007AFF */
+    --ring: 0 0% 18%;                 /* #2d2d2d */
     --radius: 0.75rem;
   }
 }

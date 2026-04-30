@@ -55,7 +55,8 @@ export async function PUT(
       );
     }
 
-    const { orderCode, ...rest } = parsed.data;
+    const { orderCode: rawOrderCode, ...rest } = parsed.data;
+    const orderCode = rawOrderCode?.trim() || null;
 
     // Check unique order code if changed
     if (orderCode && orderCode !== existing.orderCode) {
@@ -92,12 +93,19 @@ export async function PUT(
 
     const item = await db.item.update({
       where: { id },
-      data: { ...rest, orderCode: orderCode ?? null },
+      data: { ...rest, orderCode },
       include: { category: true },
     });
 
     return NextResponse.json({ item });
-  } catch {
+  } catch (err) {
+    const code = (err as { code?: string }).code;
+    if (code === "P2002") {
+      return NextResponse.json(
+        { error: "Order code already in use" },
+        { status: 409 }
+      );
+    }
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

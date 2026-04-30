@@ -11,7 +11,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Pencil, DollarSign, PowerOff, Power, AlertCircle } from "lucide-react";
+import { Pencil, DollarSign, PowerOff, Power, AlertCircle, MoreHorizontal } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useDeactivateItem, useActivateItem } from "@/hooks/use-items";
 import type { ItemWithCategory } from "@/types/items";
 import { toast } from "sonner";
@@ -180,7 +187,7 @@ export function ItemsTable({ items, onUpdatePrice }: ItemsTableProps) {
       </div>
 
       {/* Desktop table — hidden below md */}
-      <div className="hidden md:block rounded-md border">
+      <div className="hidden md:block rounded-md border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
@@ -188,6 +195,7 @@ export function ItemsTable({ items, onUpdatePrice }: ItemsTableProps) {
               <TableHead>Category</TableHead>
               <TableHead>Unit</TableHead>
               <TableHead className="text-right">Stock</TableHead>
+              <TableHead>Stock Status</TableHead>
               <TableHead className="text-right">Cost (PHP)</TableHead>
               <TableHead className="text-right">Value (PHP)</TableHead>
               <TableHead className="text-right">Reorder</TableHead>
@@ -226,14 +234,12 @@ export function ItemsTable({ items, onUpdatePrice }: ItemsTableProps) {
                   </TableCell>
                   <TableCell className="text-sm">{item.unitOfMeasure}</TableCell>
                   <TableCell className="text-right">
-                    <div className="flex flex-col items-end gap-1">
-                      <span className="text-sm font-medium">
-                        {item.allowsDecimal
-                          ? stock.toFixed(2)
-                          : stock.toFixed(0)}
-                      </span>
-                      <StockStatusBadge item={item} />
-                    </div>
+                    <span className="text-sm font-medium">
+                      {item.allowsDecimal ? stock.toFixed(2) : stock.toFixed(0)}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <StockStatusBadge item={item} />
                   </TableCell>
                   <TableCell className="text-right text-sm">
                     ₱{cost.toFixed(2)}
@@ -254,41 +260,47 @@ export function ItemsTable({ items, onUpdatePrice }: ItemsTableProps) {
                     )}
                   </TableCell>
                   <TableCell>
-                    <div className="flex justify-end gap-1">
-                      <Button variant="ghost" size="icon" asChild title="Edit item">
-                        <Link href={`/items/${item.id}/edit`}>
-                          <Pencil className="h-4 w-4" />
-                        </Link>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        title="Update price"
-                        onClick={() => onUpdatePrice(item)}
-                      >
-                        <DollarSign className="h-4 w-4" />
-                      </Button>
-                      {item.isActive ? (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          title="Deactivate item"
-                          onClick={() => handleDeactivate(item)}
-                          disabled={deactivate.isPending}
-                        >
-                          <PowerOff className="h-4 w-4 text-destructive" />
-                        </Button>
-                      ) : (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          title="Reactivate item"
-                          onClick={() => handleActivate(item)}
-                          disabled={activate.isPending}
-                        >
-                          <Power className="h-4 w-4 text-green-600" />
-                        </Button>
-                      )}
+                    <div className="flex justify-end">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="h-4 w-4" />
+                            <span className="sr-only">Open actions</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem asChild>
+                            <Link href={`/items/${item.id}/edit`}>
+                              <Pencil className="mr-2 h-4 w-4" />
+                              Edit item
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => onUpdatePrice(item)}>
+                            <DollarSign className="mr-2 h-4 w-4" />
+                            Update price
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          {item.isActive ? (
+                            <DropdownMenuItem
+                              className="text-destructive focus:text-destructive"
+                              onClick={() => handleDeactivate(item)}
+                              disabled={deactivate.isPending}
+                            >
+                              <PowerOff className="mr-2 h-4 w-4" />
+                              Deactivate
+                            </DropdownMenuItem>
+                          ) : (
+                            <DropdownMenuItem
+                              className="text-green-600 focus:text-green-600"
+                              onClick={() => handleActivate(item)}
+                              disabled={activate.isPending}
+                            >
+                              <Power className="mr-2 h-4 w-4" />
+                              Reactivate
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </TableCell>
                 </TableRow>
