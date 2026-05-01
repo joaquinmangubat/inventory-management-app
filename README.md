@@ -23,7 +23,7 @@ A full-stack inventory management web app built for a restaurant operation manag
 | Hosting | Vercel (app) + Railway (database) |
 | Styling | Tailwind CSS + shadcn/ui |
 | State | TanStack Query (server state), React Hook Form + Zod (forms) |
-| Auth | JWT in HTTP-only cookies, bcrypt |
+| Auth | JWT in HTTP-only cookies, bcryptjs |
 | Charts | Recharts |
 | Testing | Vitest (unit + integration), Playwright (E2E) |
 
@@ -67,11 +67,11 @@ npm install
 
 # Set up environment variables
 cp .env.example .env.local
-# Fill in DATABASE_URL and JWT_SECRET
+# Fill in DATABASE_URL, JWT_SECRET, and CRON_SECRET
+# (CRON_SECRET is required for the daily expiration-check cron job)
 
-# Run migrations and generate Prisma client
+# Run migrations (prisma generate runs automatically via postinstall)
 npx prisma migrate dev
-npx prisma generate
 
 # Start dev server
 npm run dev
@@ -82,8 +82,11 @@ npm run dev
 ```bash
 npm run dev              # Development server
 npm run build            # Production build
+npm run start            # Production server
+npm run lint             # ESLint check
 npm run test             # Unit tests
 npm run test:integration # Integration tests
+npm run test:e2e:setup   # Seed test DB (required before first E2E run)
 npm run test:e2e         # End-to-end tests (requires running dev server)
 npx prisma studio        # Database GUI
 ```
