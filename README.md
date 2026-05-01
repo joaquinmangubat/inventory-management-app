@@ -52,45 +52,6 @@ tests/
 └── e2e/                 # Playwright end-to-end tests
 ```
 
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+
-- PostgreSQL 15+
-
-### Setup
-
-```bash
-# Install dependencies
-npm install
-
-# Set up environment variables
-cp .env.example .env.local
-# Fill in DATABASE_URL, JWT_SECRET, and CRON_SECRET
-# (CRON_SECRET is required for the daily expiration-check cron job)
-
-# Run migrations (prisma generate runs automatically via postinstall)
-npx prisma migrate dev
-
-# Start dev server
-npm run dev
-```
-
-### Commands
-
-```bash
-npm run dev              # Development server
-npm run build            # Production build
-npm run start            # Production server
-npm run lint             # ESLint check
-npm run test             # Unit tests
-npm run test:integration # Integration tests
-npm run test:e2e:setup   # Seed test DB (required before first E2E run)
-npm run test:e2e         # End-to-end tests (requires running dev server)
-npx prisma studio        # Database GUI
-```
-
 ## Key Design Decisions
 
 **Negative stock is allowed** — the system records what actually happened rather than blocking the transaction. Critical-level alerts notify owners when stock goes negative.
